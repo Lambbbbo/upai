@@ -1,0 +1,22 @@
+该脚本用来测试又拍云存储的上传、下载，脚本支持通过rest api、form api、ftp方式进行上传下载测试。
+
+脚本执行前，请先将部分信息注册到环境变量。需要注册的信息如下：
+操作员账户: export USERNAME=<operator name>
+操作员密码: export PASSWORD=<operator password>
+服务名: export BUCKET=<bucket>
+ 
+脚本选项：
+-u : 上传，需要至少3个参数，上传方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
+     eg: -u rest /root/1.png /pic/1.png  通过rest api方式，将本地/root/1.png上传到云存储中，存储路径为/pic/1.png
+     若使用ip=x.x.x.x参数，则指定向这个ip进行上传测试。
+
+-d : 从云存储中下载，需要至少3个参数，下载方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
+     eg: -d rest /root/1.png /pic/1.png  通过rest api方式，将云存储中/pic/1.png下载到本地，存放到/root/1.png
+
+-g : 从源站下载，需要2个参数，源站URL、文件本地路径，一个可选参数ip=x.x.x.x
+     eg: -g http://www.163.com/pic/1.jpg /download/1.jpg 
+
+-r : 资源刷新，需要1个参数，资源URL
+     eg: -r http://www.163.com/pic/1.jpg
+
+-v : 服务器返回信息详细显示
