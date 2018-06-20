@@ -1,4 +1,0 @@
-示例：
-ansible-playbook -i hosts main.yml -e "YUN=network_type HOST=hostname"
-
-network_type: CTN | CUN | CMN | ORG | PCW
