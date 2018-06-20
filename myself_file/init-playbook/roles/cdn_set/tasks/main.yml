@@ -1,0 +1,119 @@
+- name: get network type
+  shell: cat /etc/upyun.cfg | grep NETWORK | awk -F\" '{print $2}'
+  register: net_result
+
+- name: modify CACHE_PEER when CTN
+  replace:
+    path: /etc/upyun.cfg
+    regexp: '^(CACHE_PEER=\").*(\")'
+    replace: '\1.#{{ CTN }}"'
+  when: net_result.stdout == "CTN"
+
+- name: modify CACHE_PEER when CUN
+  replace:
+    path: /etc/upyun.cfg
+    regexp: '^(CACHE_PEER=\").*(\")'
+    replace: '\1.#{{ CUN }}"'
+  when: net_result.stdout == "CUN"
+
+- name: modify CACHE_PEER when CMN
+  replace:
+    path: /etc/upyun.cfg
+    regexp: '^(CACHE_PEER=\").*(\")'
+    replace: '\1.#{{ CMN }}"'
+  when: net_result.stdout == "CMN"
+
+- name: modify CACHE_PEER when ORG
+  replace:
+    path: /etc/upyun.cfg
+    regexp: '^(CACHE_PEER=\").*(\")'
+    replace: '\1.#{{ ORG }}"'
+  when: net_result.stdout == "ORG"
+
+- name: modify CACHE_PEER when PCW
+  replace:
+    path: /etc/upyun.cfg
+    regexp: '^(CACHE_PEER=\").*(\")'
+    replace: '\1.#{{ PCW }}"'
+  when: net_result.stdout == "PCW"
+
+- name: get inner ip
+  shell: ifconfig|sed -r -n '/192.168.*Bcast/s#.* addr:(.*) Bcast.*#\1#gp'|head -1 | awk '{print $1}'
+  register: ip_result
+
+- name: modify NGINX_UPSTREAM in upyun.cfg
+  lineinfile:
+    dest: /etc/upyun.cfg
+    regexp: '^NGINX_UPSTREAM='
+    line: NGINX_UPSTREAM="{{ ip_result.stdout }}#1"
+
+- name: do soft link libcrypto
+  file: 
+    src: /usr/local/lib64/libcrypto.so.1.0.0 
+    dest: /lib64/libcrypto.so.6
+    state: link
+
+- name: do soft link libssl
+  file: 
+    src: /usr/local/lib64/libssl.so.1.0.0 
+    dest: /lib64/libssl.so.6
+    state: link
+
+- name: modify /etc/upyun.cfg
+  lineinfile:
+    dest: /etc/upyun.cfg
+    regexp: "^NGINX_LOG_DEV"
+    line: 'NGINX_LOG_DEV="/disk/ssd1"'
+
+- name: modify upyun cron step 1
+  replace:
+    path: /etc/cron.d/upyun
+    regexp: '#(.*upyun_cdn_health.sh.*)'
+    replace: '\1'
+
+- name: modify upyun cron step 2
+  replace:
+    path: /etc/cron.d/upyun
+    regexp: '#(.*log_io.*)'
+    replace: '\1'
+
+- name: mv temp and log dir to /disk/ssd2 step 1
+  file:
+    dest: /var/tmp
+    state: directory
+    mode: 1777
+
+- name: mv temp and log dir to /disk/ssd2 step 2
+  file:
+    dest: "{{ TMP_DEV }}"
+    state: directory
+    mode: 1777
+
+- name: mv temp and log dir to /disk/ssd2 step 3
+  file:
+    dest: "{{ TMP_DEV }}/{{ item }}"
+    state: directory
+  with_items:
+    - trafficserver_sata
+    - trafficserver_ssd
+
+- name: mv temp and log dir to /disk/ssd2 step 4
+  shell: cd /tmp;tar cf - *|(cd "{{ TMP_SSD_DEV }}";tar xf -);rm -rf /tmp;ln -snf "{{ TMP_SSD_DEV }}" /tmp
+
+- name: mv temp and log dir to /disk/ssd2 step 5
+  shell: source /etc/upyun.cfg && mkdir -p $TS_ROOT/var/log/trafficserver
+
+- name: mv temp and log dir to /disk/ssd2 step 6
+  shell: source /etc/upyun.cfg && mkdir -p $TS_SSD_ROOT/var/log/trafficserver
+
+- name: mv temp and log dir to /disk/ssd2 step 7
+  shell: source /etc/upyun.cfg && cd $TS_ROOT/var;tar cf - *|(cd "{{ TMP_DEV }}"/trafficserver_sata;tar xf -);rm -rf $TS_ROOT/var;ln -snf "{{ TMP_DEV }}"/trafficserver_sata $TS_ROOT/var
+
+- name: mv temp and log dir to /disk/ssd2 step 8
+  shell: source /etc/upyun.cfg && cd $TS_SSD_ROOT/var;tar cf - *|(cd "{{ TMP_DEV }}"/trafficserver_ssd;tar xf -);rm -rf $TS_SSD_ROOT/var;ln -snf "{{ TMP_DEV }}"/trafficserver_ssd $TS_SSD_ROOT/var
+
+- name: mv temp and log dir to /disk/ssd2 step 9
+  file:
+    dest: "{{ TMP_DEV }}"
+    owner: nobody
+    group: nobody

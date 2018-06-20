@@ -1,0 +1,184 @@
+- name: change NETWORK in upyun.cfg
+  lineinfile:
+    dest: /etc/upyun.cfg
+    regexp: '^NETWORK='
+    line: 'NETWORK="{{ YUN }}"'
+
+- name: source upyun.cfg
+  shell: source /etc/upyun.cfg && sed -r -i "s:CentOS:$HOSTNAME:g" /etc/system-release
+
+- name: modify network file
+  template: src=network.j2 dest=/etc/sysconfig/network
+
+- name: modify hosts file
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: modify profile file
+  template: src=profile.j2 dest=/etc/profile
+
+- name: check if intel netcard
+  shell: dmesg |grep -i eth|grep -iq intel
+  register: net_result
+  failed_when: "'FAILED' in net_result.stderr"
+
+- name: modify rc.local file
+  template: src=rc.local.j2 dest=/etc/rc.d/rc.local mode=0755
+
+- name: soft link for rc.local
+  file: 
+    src: /etc/rc.d/rc.local
+    dest: /etc/rc.local
+    state: link
+
+- name: soft link for python
+  file:
+    src: /usr/local/bin/python
+    dest: /usr/bin/python
+    state: link
+
+- name: modify /etc/passwd
+  shell: sed -r -i '/^[^root]/s:/bin/bash:/sbin/nologin:g' /etc/passwd
+
+- name: modify the console in inittab
+  lineinfile:
+    dest: /etc/inittab
+    regexp: '^id'
+    line: 'id:3:initdefault:'
+
+- name: stop unnecessary service
+  shell: |
+    source /etc/upyun.cfg && for i in /etc/rc3.d/S*;do prog=$(echo `basename $i`|cut -c4-);echo "$SERVICES"|grep -q $prog;[ $? != 0 ] && chkconfig --level 0136 $prog off;done
+  register: bad_result
+  failed_when: "'FAILED' in bad_result.stderr"
+
+- name: start necessary services
+  shell: |
+    source /etc/upyun.cfg && df|grep -q mapper
+    [ $? = 0 ] && SERVICES=$SERVICES" lvm2-monitor"
+    for i in $SERVICES;do [ $i = "local" ] || (chkconfig --level 0136 $i on);done
+  register: srv_result
+  failed_when: "'FAILED' in srv_result.stderr"
+
+- name: modify selinux step 1
+  lineinfile:
+    dest: /etc/sysconfig/selinux
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: modify selinux step 2
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: update system library path
+  shell: ldconfig 
+
+- name: check the network setting and record it
+  shell: "{{ item }}"
+  with_items:
+    - /usr/bin/hunter > /etc/issue
+    - /usr/bin/hunter > /etc/issue.net
+    - /usr/bin/hunter > /etc/motd
+
+- name: modify crontab daily
+  file: "dest=/etc/cron.daily/{{ item }} state=absent"
+  with_items:
+    - cups
+    - makewhatis.cron
+    - mlocate.cron
+    - prelink
+    - rpm
+    - tmpwatch
+
+- name: modify cron hourly
+  file: dest=/etc/cron.hourly/mcelog.cron state=absent
+
+- name: modify cron weekly
+  file: "dest=/etc/cron.weekly/{{ item }} state=absent"
+  with_items:
+    - 99-raid-check
+    - makewhatis.cron
+
+- name: modify cron.d
+  file: dest=/etc/cron.d/sysstat state=absent
+
+- name: load kernal parameter
+  shell: sysctl -p > /dev/null
+  ignore_errors: true
+
+- name: modify sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '.*UseDNS.*',line: 'UseDNS no'}
+    - { regexp: '^#TCPKeepAlive.*',line: 'TCPKeepAlive yes'}
+    - { regexp: '^#ClientAliveInterval.*',line: 'ClientAliveInterval 3'}
+    - { regexp: '^#MaxAuthTries.*',line: 'MaxAuthTries 3'}
+
+- name: modify ssh port
+  shell: source /etc/upyun.cfg && sed -r -i "/^Port/s:.*:Port $SSHD_PORT:" /etc/ssh/sshd_config
+
+- name: check the authorized_keys
+  shell: egrep -i -c "kvm|ahua|yousri" /root/.ssh/authorized_keys
+  register: ssh_result
+
+- name: modify password ssh
+  shell: sed -r -i '/^PasswordAuthentication/s:.*:PasswordAuthentication no:' /etc/ssh/sshd_config
+  when: ssh_result.stdout == '3'
+
+- name: check if the time_zone is right
+  shell: source /etc/upyun.cfg && grep -w -q $ZONE /etc/sysconfig/clock
+  register: time_result
+  failed_when: "'FAILED' in time_result.stderr"
+
+- name: modify time_zone
+  shell: "{{ item }}"
+  with_items: 
+    - source /etc/upyun.cfg && sed -r -i "s:ZONE=.*:ZONE=\"$ZONE\":" /etc/sysconfig/clock
+    - source /etc/upyun.cfg && cp -a /usr/share/zoneinfo/$ZONE /etc/localtime
+  when: time_result.rc == 1
+
+- name: adjust time_zone
+  shell: "{{ item }}" 
+  with_items:      
+    - source /etc/upyun.cfg && ntpdate -o3 $TIME_SRV
+    - source /etc/upyun.cfg && sed -r -i "/ntpdate/s:(.*) -o3.*:\1 -o3 0.pool.ntp.org $TIME_SRV):g" /etc/cron.d/upyun
+  ignore_errors: true
+
+- name: modify limits.conf delete
+  lineinfile:
+    dest: /etc/security/limits.conf
+    regexp: "{{ item }}"
+    state: absent
+  with_items:
+    - nofile
+    - memlock
+
+- name: modify limits.conf insert
+  lineinfile:
+    dest: /etc/security/limits.conf
+    line: "{{ item }}"
+  with_items:
+    - '* soft nofile 655350'
+    - '* hard nofile 655350'
+    - '#* soft memlock 104857'
+    - '#* hard memlock 104857'
+
+- name: delete lines in blacklist.conf
+  shell: sed -r -i "/{{ item }}/d" /etc/modprobe.d/blacklist.conf
+  with_items:
+    - iptable_nat
+    - nf_nat nf_conntrack
+    - nf_conntrack_ipv4
+    - nf_defrag_ipv4
+
+- name: insert lines in blacklist.conf
+  shell: echo "blacklist {{ item }}" >> /etc/modprobe.d/blacklist.conf
+  with_items:
+    - iptable_nat
+    - nf_nat nf_conntrack
+    - nf_conntrack_ipv4
+    - nf_defrag_ipv4

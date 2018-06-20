@@ -1,0 +1,5 @@
+示例：
+ansible-playbook -i hosts main.yml -e "YUN=network_type node=(hostname|groupname)"
+
+network_type: CTN | CUN | CMN | ORG | PCW
+node: 指定该playbook生效范围，可指定单台主机，也可指定group对组生效
