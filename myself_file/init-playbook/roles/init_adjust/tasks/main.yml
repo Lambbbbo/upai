@@ -112,6 +112,7 @@
     path: /etc/ssh/sshd_config
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
+    backrefs: yes
   with_items:
     - { regexp: '.*UseDNS.*',line: 'UseDNS no'}
     - { regexp: '^#TCPKeepAlive.*',line: 'TCPKeepAlive yes'}
@@ -126,7 +127,10 @@
   register: ssh_result
 
 - name: modify password ssh
-  shell: sed -r -i '/^PasswordAuthentication/s:.*:PasswordAuthentication no:' /etc/ssh/sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
   when: ssh_result.stdout == '3'
 
 - name: check if the time_zone is right
