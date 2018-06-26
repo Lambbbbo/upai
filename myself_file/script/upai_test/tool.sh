@@ -2,8 +2,10 @@
 
 ip=""
 sign="0"
+is_https="0"
 domain=""
 dt=`date -u +%a," "%d" "%b" "%Y" "%T" "GMT`
+dt_s=`date +%s`
 secret=`echo -n ${PASSWORD} | md5sum | awk '{print $1}'`
 method=""
 verbose="off"
@@ -30,6 +32,8 @@ usage(){
     -g : get file from source station, -g URL LOCAL_FILE_PATH <ip=x.x.x.x>，eg.(-g http://www.163.com/pic/1.jpg /download/1.jpg)
          ip : optional, you can specify a server ip to request. or not specify,`basename $0` will use the dns lookup ip.
 
+    -t : curl a URL, -t URL <ip=x.x.x.x>, eg.(-t http://www.163.com/pic/1.jpg)
+
     -r : refresh cdn_cache, -d URL , eg.(-r http://www.163.com/pic/1.png)
     -v : verbose, view detail
     -h : help
@@ -42,14 +46,14 @@ auth(){
     elif [ $method == rest ] || [ $method == REST ];then
 	auth_h=`echo -n "${USERNAME}:${PASSWORD}" | base64`
     elif [ $method == form ] || [ $method == FORM ];then
-	dt_s=`date +%s -d "$dt"`
+#	dt_s=`date +%s -d "$dt"`
 	dt_s_e=`expr $dt_s + 3600`
 	file_md5=`md5sum $l_path | awk '{print $1}'`
 #	secret=`echo -n ${PASSWORD} | md5sum | awk '{print $1}'`
 	policy={\"bucket\":\"$BUCKET\",\"save-key\":\"$r_path\",\"expiration\":\"${dt_s_e}\",\"date\":\"${dt}\",\"content-md5\":\"${file_md5}\"}
 	policy_b=`echo -n $policy | base64`
 	policy_r=`echo ${policy_b} | sed "s# ##g"`
-	sign=`echo -n "POST&/${BUCKET}&${dt}&${policy_r}&${file_md5}" | openssl sha1 -hmac "${secret}" -binary | base64`
+	sig=`echo -n "POST&/${BUCKET}&${dt}&${policy_r}&${file_md5}" | openssl sha1 -hmac "${secret}" -binary | base64`
     fi
 }
 
@@ -90,13 +94,13 @@ EOF
 	fi
     elif [ $method == form ] || [ $method == FORM ];then
 	if [ $sign -eq 1 ];then
-	    curl http://${ip}/${BUCKET} -H "Host:v0.api.upyun.com" -F authorization="UPYUN ${USERNAME}:${sign}" -F file=@${l_path} -F policy=${policy_r} -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n -v -s > /tmp/http_res.txt 2>&1
+	    curl http://${ip}/${BUCKET} -H "Host:v0.api.upyun.com" -F authorization="UPYUN ${USERNAME}:${sig}" -F file=@${l_path} -F policy=${policy_r} -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n -v -s > /tmp/http_res.txt 2>&1
 	    domain="v0.api.upyun.com"
             echo -e "\033[41;37m request domain is ${domain} \033[0m"
             echo -e "\033[41;37m request ip is ${ip} \033[0m"
             echo
 	else
-	    curl http://v0.api.upyun.com/${BUCKET} -F authorization="UPYUN ${USERNAME}:${sign}" -F file=@${l_path} -F policy=${policy_r} -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n -v -s > /tmp/http_res.txt 2>&1
+	    curl http://v0.api.upyun.com/${BUCKET} -F authorization="UPYUN ${USERNAME}:${sig}" -F file=@${l_path} -F policy=${policy_r} -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n -v -s > /tmp/http_res.txt 2>&1
 	    domain="v0.api.upyun.com"
 	    ip=`cat /tmp/http_res.txt | awk '{for(i=1;i<=NF;i++)if($i=="Trying")print $(i+1)}' | awk -F'.' 'OFS="."{print $1,$2,$3,$4}'`
 	    echo -e "\033[41;37m request domain is ${domain} \033[0m"
@@ -147,19 +151,52 @@ EOF
 
 get(){
 	if [ $sign -eq 1 ];then
-	    curl -X GET ${req_url} -o ${l_path} -H "Host:${host}" -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
-            domain=$host 
+	    if [ $is_https -eq 0 ];then
+	    	curl -X GET ${req_uri} -o ${l_path} -H "Host:${host}" -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+            else
+		curl -X GET ${req_uri} -o ${l_path} -H "Host:${host}" -k -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+	    fi
+	    domain=$host 
             echo -e "\033[41;37m request domain is ${domain} \033[0m"
             echo -e "\033[41;37m request ip is ${ip} \033[0m"
             echo
 	else
-    	    curl -X GET ${url} -o ${l_path} -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
-    	    domain=`echo "${url}" | awk -F "[/]+" '{print $2}'`
+	    if [ $is_https -eq 0 ];then
+    	        curl -X GET ${url} -o ${l_path} -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+    	    else
+		curl -X GET ${url} -o ${l_path} -s -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+	    fi
+	    domain=`echo "${url}" | awk -F "[/]+" '{print $2}'`
     	    ip=`cat /tmp/http_res.txt | awk '{for(i=1;i<=NF;i++)if($i=="Trying")print $(i+1)}' | awk -F'.' 'OFS="."{print $1,$2,$3,$4}'`
 	    echo -e "\033[41;37m request domain is ${domain} \033[0m"
             echo -e "\033[41;37m request ip is ${ip} \033[0m"
 	    echo
 	fi
+}
+
+curl_url(){
+	if [ $sign -eq 1 ];then
+            if [ $is_https -eq 0 ];then
+                curl ${req_uri} -H "Host:${host}" -s -I -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+            else
+                curl ${req_uri} -H "Host:${host}" -k -s -I -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1
+            fi
+            domain=$host 
+            echo -e "\033[41;37m request domain is ${domain} \033[0m"
+            echo -e "\033[41;37m request ip is ${ip} \033[0m"
+            echo
+        else
+            if [ $is_https -eq 0 ];then
+                curl ${url} -s -I -v -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1        
+            else
+                curl ${url} -s -v -I -w dns_lookup:%{time_namelookup}\\ntime_connect:%{time_connect}\\ntime_appconnect:%{time_appconnect}\\ntime_pretransfer:%{time_pretransfer}\\ntime_redirect:%{time_redirect}\\ntime_starttransfer:%{time_starttransfer}\\ntotal_time:%{time_total}\\n > /tmp/http_res.txt 2>&1        
+            fi
+            domain=`echo "${url}" | awk -F "[/]+" '{print $2}'`
+            ip=`cat /tmp/http_res.txt | awk '{for(i=1;i<=NF;i++)if($i=="Trying")print $(i+1)}' | awk -F'.' 'OFS="."{print $1,$2,$3,$4}'`
+            echo -e "\033[41;37m request domain is ${domain} \033[0m"
+            echo -e "\033[41;37m request ip is ${ip} \033[0m"
+            echo
+        fi
 }
 
 info(){
@@ -284,7 +321,7 @@ case "$1" in
 	fi
         echo "$@" | grep -q 'ip='
         if [ $? -eq 0 ];then
-	    ip=`echo $@ | awk -F "[ =]+" '{print $(NF-1)}'`
+	    ip=`echo $@ | awk -F "[ =]+" '{for(i=1;i<=NF;i++)if($i ~ /ip/)print $(i+1)}'`
 	    sign=1
 	    shift 5
  	else
@@ -315,7 +352,7 @@ case "$1" in
 	fi
  	echo "$@" | grep -q 'ip='
    	if [ $? -eq 0 ];then
-	    ip=`echo $@ | awk -F "[ =]+" '{print $(NF-1)}'`
+	    ip=`echo $@ | awk -F "[ =]+" '{for(i=1;i<=NF;i++)if($i ~ /ip/)print $(i+1)}'`
 	    sign=1
             shift 5
         else
@@ -332,22 +369,52 @@ case "$1" in
     -g)
 	url=$2
 	l_path=$3
-	get
-	net_test
+	echo "$@" | grep -q 'https://'
+	if [ $? -eq 0 ];then
+	    is_https=1
+	fi
 	echo "$@" | grep -q 'ip='
 	if [ $? -eq 0 ];then
 	    host=`echo $url | awk -F "[ /]+" '{print $2}'`
-	    ip=`echo $@ | awk -F "[ =]+" '{print $(NF-1)}'`
+	    ip=`echo $@ | awk '{for(i=1;i<=NF;i++)if($i ~/ip=/)print $i}' | awk -F = '{print $2}'` 
 	    req_uri=`echo $url | sed "s/${host}/${ip}/"`
 	    sign=1
+	    get
+ 	    net_test
             shift 4
         else
+            get
+	    net_test
 	    shift 3
 	fi
 	if [ -z $1 ];then
             info
         fi
 	;;
+    -t)
+        url=$2
+        echo "$@" | grep -q 'https://'
+        if [ $? -eq 0 ];then
+            is_https=1
+        fi
+        echo "$@" | grep -q 'ip='
+        if [ $? -eq 0 ];then
+            host=`echo $url | awk -F "[ /]+" '{print $2}'`
+            ip=`echo $@ | awk '{for(i=1;i<=NF;i++)if($i ~/ip=/)print $i}' | awk -F = '{print $2}'`
+            req_uri=`echo $url | sed "s/${host}/${ip}/"`
+            sign=1
+	    curl_url
+            net_test
+            shift 3
+        else
+	    curl_url
+            net_test
+            shift 2
+        fi
+        if [ -z $1 ];then
+            info
+        fi
+        ;;
     -r)
 	url=$2
 	refresh

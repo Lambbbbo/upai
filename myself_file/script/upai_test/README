@@ -4,19 +4,28 @@
 操作员账户: export USERNAME=<operator name>
 操作员密码: export PASSWORD=<operator password>
 服务名: export BUCKET=<bucket>
+可写到profile文件中长期保留。
+注意，如果脚本在mac上执行，mac的语言环境需设置为en_US.UTF-8，否则date命令可能会出现预期外的错误。
  
 脚本选项：
--u : 上传，需要至少3个参数，上传方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
+-u : 上传，需要3个必选参数及一个可选参数，三个必选参数为上传方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
      eg: -u rest /root/1.png /pic/1.png  通过rest api方式，将本地/root/1.png上传到云存储中，存储路径为/pic/1.png
-     若使用ip=x.x.x.x参数，则指定向这个ip进行上传测试。
+     若使用ip=x.x.x.x参数，则指定向这个ip进行上传测试。下同。
+     支持3种方式上传，REST api、FORM api以及FTP
 
--d : 从云存储中下载，需要至少3个参数，下载方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
+-d : 从云存储中下载，需要3个必选参数及一个可选参数，必选参数为下载方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
      eg: -d rest /root/1.png /pic/1.png  通过rest api方式，将云存储中/pic/1.png下载到本地，存放到/root/1.png
+     支持2种方式下载，REST api及FTP
 
--g : 从源站下载，需要2个参数，源站URL、文件本地路径，一个可选参数ip=x.x.x.x
+-g : 从源站下载，需要2个必选参数及一个可选参数，必选参数为源站URL、文件本地路径，一个可选参数ip=x.x.x.x
      eg: -g http://www.163.com/pic/1.jpg /download/1.jpg 
+     此处建议URL使用单引号引起来，避免复杂URL中存在特殊字符导致执行异常。
+
+-t : 测试目标url，与-g参数不同的是，-t参数不将文件保存到本地。需要1个必选参数及一个可选参数，必选参数为URL，可选参数为ip=x.x.x.x
+     eg: -t http://www.163.com/pic/1.jpg
 
 -r : 资源刷新，需要1个参数，资源URL
      eg: -r http://www.163.com/pic/1.jpg
 
--v : 服务器返回信息详细显示
+-v : 服务器返回信息详细显示，该参数请放在最后。
+     eg: bash tool.sh -u rest /root/1.png /pic/1.png ip=1.1.1.1 -v
