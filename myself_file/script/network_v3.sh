@@ -1,4 +1,5 @@
 #!/bin/bash
+#this script is used to change network settings
 
 dir=/etc/sysconfig/network-scripts
 change(){
