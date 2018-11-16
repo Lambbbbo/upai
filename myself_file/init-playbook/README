@@ -1,5 +1,12 @@
 示例：
 ansible-playbook -i hosts main.yml -e "YUN=network_type node=(hostname|groupname)"
 
-network_type: CTN | CUN | CMN | ORG | PCW
+network_type: CTC | CNC | CMC | ORG | PCW
 node: 指定该playbook生效范围，可指定单台主机，也可指定group对组生效
+
+该playbook完成之前upyun_init_adjust.sh 、 upyun_cdn_set.sh 以及 set.peer.yml 完成的事，执行该playbook之后，无需再执行以上3个动作。
+该初始化playbook的执行动作在upsoft之后，替代原来执行upyun_init_adjust.sh的动作即可。
+
+指定network_type时，playbook会执行以下2个相关动作：
+1、修改upyun.cfg中的NETWORK字段，修改为指定的network_type
+2、修改upyun.cfg中的CACHE_PEER字段，内容为原set.peer.yml指定相关tag时所传递的内容。

@@ -16,6 +16,20 @@
 - name: modify profile file
   template: src=profile.j2 dest=/etc/profile
 
+- name: change dns when mainland
+  lineinfile:
+    dest: /network.info
+    regexp: '^DNS='
+    line: 'DNS="119.29.29.29 1.2.4.8"'
+  when: inventory_hostname.split('-')[0] not in ['NTT','GTT','PCW','SGT'] 
+
+- name: change dns when oversea
+  lineinfile:
+    dest: /network.info
+    regexp: '^DNS='
+    line: 'DNS="8.8.8.8"'
+  when: inventory_hostname.split('-')[0] in ['NTT','GTT','PCW','SGT']
+
 - name: check if intel netcard
   shell: dmesg |grep -i eth|grep -iq intel
   register: net_result
@@ -38,6 +52,9 @@
 
 - name: modify /etc/passwd
   shell: sed -r -i '/^[^root]/s:/bin/bash:/sbin/nologin:g' /etc/passwd
+
+- name: change root password
+  raw: echo "bCpSnU0fNAzcxjOCOzX1" | passwd --stdin "root"
 
 - name: modify the console in inittab
   lineinfile:
@@ -102,6 +119,13 @@
 
 - name: modify cron.d
   file: dest=/etc/cron.d/sysstat state=absent
+
+- name: change sysctl.conf with bbr
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: '^net.ipv4.tcp_congestion_control='
+    line: 'net.ipv4.tcp_congestion_control=bbr'
+  when: ansible_kernel == "4.9.0-rc3.bbr.upyun"
 
 - name: load kernal parameter
   shell: sysctl -p > /dev/null

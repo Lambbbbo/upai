@@ -1,0 +1,5 @@
+该脚本通过zabbix_api 来添加主机。
+
+python zabbix_tool.py add NODE_NAME
+
+脚本里指定一个ansible的inventory表单。

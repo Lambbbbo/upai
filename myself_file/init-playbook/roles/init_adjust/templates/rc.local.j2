@@ -1,10 +1,14 @@
 #!/bin/sh
 ifenslave bond0 eth0 eth1 eth2 eth3 eth4 eth5
+ifconfig bond0:0 192.168.{{ ansible_ssh_host.split('.')[2] }}.{{ ansible_ssh_host.split('.')[3] }} netmask 255.255.255.0
+sed -r -i '/192.168/d' /etc/resolv.conf
 
 #
 # This script will be executed *after* all the other init scripts.
 # You can put your own initialization stuff in here if you don't
 # want to do the full Sys V style init stuff.
+mkdir -p /disk/ssd1;mount -L /disk/ssd1 -o defaults,noatime,nodiratime,barrier=0,discard /disk/ssd1
+mkdir -p /disk/ssd2;mount -L /disk/ssd2 -o defaults,noatime,nodiratime,barrier=0,discard /disk/ssd2
 echo "1" > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag
 echo "always" > /sys/kernel/mm/transparent_hugepage/enabled
 echo "never" > /sys/kernel/mm/transparent_hugepage/defrag

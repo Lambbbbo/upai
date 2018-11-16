@@ -1,3 +1,10 @@
+- name: get inventory list
+  local_action: git repo={{ conf_repo }} dest={{ work_path }}
+  run_once: true
+
+- name: make peer file
+  local_action: script "get_v406_ip.sh"
+
 - name: get network type
   shell: cat /etc/upyun.cfg | grep NETWORK | awk -F\" '{print $2}'
   register: net_result
@@ -6,22 +13,22 @@
   replace:
     path: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
-    replace: '\1.#{{ CTN }}"'
-  when: net_result.stdout == "CTN"
+    replace: '\1.#{{ CTC }}"'
+  when: net_result.stdout == "CTC"
 
 - name: modify CACHE_PEER when CUN
   replace:
     path: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
-    replace: '\1.#{{ CUN }}"'
-  when: net_result.stdout == "CUN"
+    replace: '\1.#{{ CNC }}"'
+  when: net_result.stdout == "CNC"
 
 - name: modify CACHE_PEER when CMN
   replace:
     path: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
-    replace: '\1.#{{ CMN }}"'
-  when: net_result.stdout == "CMN"
+    replace: '\1.#{{ CMC }}"'
+  when: net_result.stdout == "CMC"
 
 - name: modify CACHE_PEER when ORG
   replace:
