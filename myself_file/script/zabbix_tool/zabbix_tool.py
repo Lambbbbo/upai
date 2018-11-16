@@ -37,10 +37,10 @@ def get_all_host(lists):
         for line in f.readlines():
             if re.search('ansible_ssh_host',line):
                 hostname = line.split()[0]
-                hosts[hostname] = line.split('=')[1]
+                hosts[hostname] = line.split('=')[1].split('\n')[0]
         return hosts
 
-def get_host_info(API,HEADERS,NODE):
+def get_host_info(API,HEADERS,host):
     authID = get_auth(API,HEADERS)
     data = json.dumps(
         {
@@ -49,7 +49,7 @@ def get_host_info(API,HEADERS,NODE):
             "params": {
                 "output": ["hostid"],
                 "filter": {
-                    "host": [NODE]
+                    "host": [host]
                     }
                 },
             "id": 1,
@@ -71,7 +71,9 @@ def get_proxyid(API,HEADERS):
             "jsonrpc": "2.0",
             "method": "proxy.get",
             "params": {
-                "output": ["proxyid"],
+                "output": [
+                    "proxyid"
+                ],
                 "filter": {
                     "host": [
                         "DC-ZJ-HGH-12-15",
@@ -147,13 +149,17 @@ def get_groupid(API,HEADERS):
     return groupid
 
 def create_host(API,HEADERS,NODE,lists):
-    hosts = {}
     authID = get_auth(API,HEADERS)
-    with open (lists,'r') as f:
-        for line in f.readlines():
-            if re.search(NODE + "-",line):
-                hostname = line.split()[0]
-                hosts[hostname] = line.split('=')[1].split('\n')[0]      ##从list表单中，获取相应的主机名及ip
+
+    if NODE == "all":
+        hosts = get_all_host(lists)
+    else:
+        hosts = {}
+        with open (lists,'r') as f:
+            for line in f.readlines():
+                if re.search(NODE + "-",line):
+                    hostname = line.split()[0]
+                    hosts[hostname] = line.split('=')[1].split('\n')[0]      ##从list表单中，获取相应的主机名及ip
 
     nodes = []
     for host in hosts:
@@ -216,7 +222,42 @@ def create_host(API,HEADERS,NODE,lists):
             print "Error as ", e
         else:
             response = json.loads(result.read())
-            print "host: %s is added, proxy by %s, hostid is %s\n" % (node,hosts[node],response['result']['hostids'][0])
+            print "host: %s is added, hostid is %s\n" % (node,response['result']['hostids'][0])
+
+def disable_host(API,HEADERS,NODE,lists):
+    authID = get_auth(API,HEADERS)
+    hosts = {}
+    with open (lists,'r') as f:
+        for line in f.readlines():
+            if re.search(NODE + "-",line):
+                hostname = line.split()[0]
+                hosts[hostname] = line.split('=')[1].split('\n')[0]
+
+    for host in hosts:
+        hostid = get_host_info(API,HEADERS,host)
+        id = hostid[0]['hostid']
+        data = json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "method": "host.update",
+                "params": {
+                    "hostid": id,
+                    "status": 1
+                },
+                "auth": authID,
+                "id": "1"
+            })
+
+        request = urllib2.Request(API,data)
+        for key in HEADERS:
+            request.add_header(key,HEADERS[key])
+        try:
+            result = urllib2.urlopen(request)
+        except URLError as e:
+            print "Error as ", e
+        else:
+            response = json.loads(result.read())
+            print "host %s is disabled." % (host)
 
 def main():
     API = "http://10.0.2.52:8080/zabbix/api_jsonrpc.php"
@@ -225,13 +266,14 @@ def main():
     NODE = sys.argv[2]
     lists = "/root/lists"
 
-    if METHOD == "add":
-        if NODE == "all":
-            pass
-        else:
-            create_host(API,HEADERS,NODE,lists)
+    if METHOD == "add" :
+        create_host(API,HEADERS,NODE,lists)
     elif METHOD == "del":
         pass
+    elif METHOD == "disable":
+        disable_host(API,HEADERS,NODE,lists)
+    else:
+        print "Wrong method!"
             
 if __name__ == '__main__':
     main()
