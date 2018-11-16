@@ -1,13 +1,15 @@
 该脚本用来测试又拍云存储的上传、下载，脚本支持通过rest api、form api、ftp方式进行上传下载测试。
+以及指定URL进行curl测试。
+脚本支持打印以下内容：访问目标域名、访问目标IP、目标IP ping测试结果、目标IP traceroute结果、服务器返回信息、测试过程所有步骤所用时间
 
 脚本执行前，请先将部分信息注册到环境变量。需要注册的信息如下：
 操作员账户: export USERNAME=<operator name>
 操作员密码: export PASSWORD=<operator password>
 服务名: export BUCKET=<bucket>
-可写到profile文件中长期保留。
+可写到profile或bashrc文件中长期保留。
 注意，如果脚本在mac上执行，mac的语言环境需设置为en_US.UTF-8，否则date命令可能会出现预期外的错误。
  
-脚本选项：
+脚本参数：
 -u : 上传，需要3个必选参数及一个可选参数，三个必选参数为上传方式、文件本地路径、文件远程路径，一个可选参数ip=x.x.x.x
      eg: -u rest /root/1.png /pic/1.png  通过rest api方式，将本地/root/1.png上传到云存储中，存储路径为/pic/1.png
      若使用ip=x.x.x.x参数，则指定向这个ip进行上传测试。下同。
@@ -29,3 +31,12 @@
 
 -v : 服务器返回信息详细显示，该参数请放在最后。
      eg: bash tool.sh -u rest /root/1.png /pic/1.png ip=1.1.1.1 -v
+
+time信息解读：
+dns_lookup: dns查询所使用的时间
+time_connect：与服务器建立TCP连接所使用的时间
+time_appconnect：与服务器建立SSL/SSH/etc connect/handshake 等连接时，所使用的时间，即如果是https服务，则包含SSL握手的时间
+time_pretransfer：从开始到准备进行传输所花费的时间，包含了dns查询、TCP握手、SSL握手、建立TCP连接的时间。
+time_redirect：重定向所使用时间
+time_starttransfer：从发出请求到服务器返回第一个报文所使用的时间。
+time_total：总时间

@@ -206,7 +206,7 @@ info(){
     	if [ $verbose == off ];then
 	    echo -e "\033[31m-------------server response-----------\033[0m"
   	    echo
-            cat /tmp/http_res.txt | grep '<' | egrep "HTTP/1.1|Server" 
+            cat /tmp/http_res.txt | grep '<' | egrep -i "HTTP/|Server" 
             echo
             echo -e "\033[31m-------------time information----------\033[0m"
 	    echo
@@ -328,7 +328,7 @@ case "$1" in
 	    shift 4
 	fi
 	upload
-	net_test
+#	net_test
 	if [ -z $1 ];then
  	    if [ $method == rest ] || [ $method == REST ] || [ $method == form ] || [ $method == FORM ];then
 	    	info
