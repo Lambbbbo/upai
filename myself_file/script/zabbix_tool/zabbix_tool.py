@@ -35,9 +35,9 @@ def get_all_host(lists):
     hosts = {}
     with open (lists,'r') as f:
         for line in f.readlines():
-            if re.search('ansible_ssh_host',line):
+            if re.search('ansible_ssh_host',line) and not line.startswith('#'):
                 hostname = line.split()[0]
-                hosts[hostname] = line.split('=')[1].split('\n')[0]
+                hosts[hostname] = line.split('=')[1].split('\n')[0].split()[0]
         return hosts
 
 def get_host_info(API,HEADERS,host):
@@ -121,7 +121,28 @@ def get_templateid(API,HEADERS):
     templateid = response['result']
     return templateid
 
-def get_groupid(API,HEADERS):
+def create_group(API,HEADERS,group_name):
+    authID = get_auth(API,HEADERS)
+    data = json.dumps(
+        {
+            "jsonrpc": "2.0",
+            "method": "hostgroup.create",
+            "params":{
+                "name": group_name
+            },
+            "auth": authID,
+            "id": 1
+        })
+        
+    request = urllib2.Request(API,data)
+    for key in HEADERS:
+        request.add_header(key,HEADERS[key])
+    result = urllib2.urlopen(request)
+    response = json.loads(result.read())
+    group_id = response["result"]["groupids"][0]
+    return group_id
+
+def get_groupid(API,HEADERS,group_name):
     authID = get_auth(API,HEADERS)
     data = json.dumps(
         {
@@ -131,7 +152,7 @@ def get_groupid(API,HEADERS):
                 "output": ["groupid"],
                 "filter": {
                     "name": [
-                        "CDN_edge_node"
+                        group_name 
                     ]
                 }
             },
@@ -144,7 +165,6 @@ def get_groupid(API,HEADERS):
         request.add_header(key,HEADERS[key])
     result = urllib2.urlopen(request)
     response = json.loads(result.read())
-    result.close()
     groupid = response['result']
     return groupid
 
@@ -157,9 +177,9 @@ def create_host(API,HEADERS,NODE,lists):
         hosts = {}
         with open (lists,'r') as f:
             for line in f.readlines():
-                if re.search(NODE + "-",line):
+                if line.startswith(NODE + "-"):
                     hostname = line.split()[0]
-                    hosts[hostname] = line.split('=')[1].split('\n')[0]      ##从list表单中，获取相应的主机名及ip
+                    hosts[hostname] = line.split('=')[1].split('\n')[0].split()[0]      ##从list表单中，获取相应的主机名及ip
 
     nodes = []
     for host in hosts:
@@ -169,7 +189,6 @@ def create_host(API,HEADERS,NODE,lists):
 
     proxyid = get_proxyid(API,HEADERS)
     templateid = get_templateid(API,HEADERS)
-    groupid = get_groupid(API,HEADERS)
 
     id = []
     for ids in proxyid:
@@ -181,6 +200,13 @@ def create_host(API,HEADERS,NODE,lists):
         p_host[host] = next(p_id)     ##将主机平均的分配到不同的proxy上
 
     for node in nodes:             ##从list中遍历未添加的主机，通过api添加
+        group_name = re.search(r"\D{3}\-\D{2}\-\w{3,4}",node).group()
+        groupid = get_groupid(API,HEADERS,group_name)
+        if not groupid:
+            group_id = create_group(API,HEADERS,group_name)
+        else:
+            group_id = groupid[0]['groupid']
+        
         data = json.dumps(
             {
                 "jsonrpc": "2.0",
@@ -200,7 +226,7 @@ def create_host(API,HEADERS,NODE,lists):
                     "proxy_hostid": p_host[node],
                     "groups": [
                         {
-                            "groupid": groupid[0]["groupid"]
+                            "groupid": group_id
                         }
                     ],
                     "templates": [
@@ -211,7 +237,7 @@ def create_host(API,HEADERS,NODE,lists):
                 },
                 "auth": authID,
                 "id": "1"
-            })
+            }) 
 
         request = urllib2.Request(API,data)
         for key in HEADERS:
@@ -250,6 +276,7 @@ def disable_host(API,HEADERS,NODE,lists):
 
         request = urllib2.Request(API,data)
         for key in HEADERS:
+            
             request.add_header(key,HEADERS[key])
         try:
             result = urllib2.urlopen(request)
@@ -262,9 +289,10 @@ def disable_host(API,HEADERS,NODE,lists):
 def main():
     API = "http://10.0.2.52:8080/zabbix/api_jsonrpc.php"
     HEADERS = {"Content-type": "application/json"}
-    METHOD = sys.argv[1]
-    NODE = sys.argv[2]
-    lists = "/root/lists"
+    lists = sys.argv[1]
+    METHOD = sys.argv[2]
+    NODE = sys.argv[3]
+#    lists = "/root/upai/inventory/machines/lists-cdn-edge"
 
     if METHOD == "add" :
         create_host(API,HEADERS,NODE,lists)

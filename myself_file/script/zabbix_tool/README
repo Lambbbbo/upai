@@ -1,5 +1,8 @@
 该脚本通过zabbix_api 来添加主机。
 
-python zabbix_tool.py add NODE_NAME
+python zabbix_tool.py lists add NODE_NAME
 
-脚本里指定一个ansible的inventory表单。
+3个参数分别为：
+lists: 指定ansible inventory表单
+add: 指定为添加节点
+NODE_NAME: 指定添加组名
