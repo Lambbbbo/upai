@@ -13,8 +13,8 @@ def get_auth(API,HEADERS):
             "jsonrpc": "2.0",
             "method": "user.login",
             "params": {
-                "user": "Admin",
-                "password": "zabbix"
+                "user": "hejian",
+                "password": "zhrmghgyxd!25"
             },
             "id": 1
         })
@@ -49,7 +49,7 @@ def get_host_info(API,HEADERS,host):
             "params": {
                 "output": ["hostid"],
                 "filter": {
-                    "host": [host]
+                    "name": [host]
                     }
                 },
             "id": 1,
@@ -212,7 +212,8 @@ def create_host(API,HEADERS,NODE,lists):
                 "jsonrpc": "2.0",
                 "method": "host.create",
                 "params": {
-                    "host": node,
+                    "name": node,
+                    "host": hosts[node],
                     "interfaces": [
                         {
                             "type": 1,
@@ -261,6 +262,7 @@ def disable_host(API,HEADERS,NODE,lists):
 
     for host in hosts:
         hostid = get_host_info(API,HEADERS,host)
+        #print hostid
         id = hostid[0]['hostid']
         data = json.dumps(
             {
@@ -276,7 +278,6 @@ def disable_host(API,HEADERS,NODE,lists):
 
         request = urllib2.Request(API,data)
         for key in HEADERS:
-            
             request.add_header(key,HEADERS[key])
         try:
             result = urllib2.urlopen(request)
@@ -286,9 +287,71 @@ def disable_host(API,HEADERS,NODE,lists):
             response = json.loads(result.read())
             print "host %s is disabled." % (host)
 
+def delete_host(API,HEADERS,NODE,lists):
+    authID = get_auth(API,HEADERS)
+    hosts = []
+    with open (lists,'r') as f:
+        for line in f.readlines():
+            if re.search(NODE + "-",line):                                                                                                                      
+                hostname = line.split()[0]
+                hosts.append(hostname)
+
+    for host in hosts:
+        hostid = get_host_info(API,HEADERS,host)
+        id = hostid[0]['hostid']
+        data = json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "method": "host.delete",
+                "params": [
+                    id
+                ],
+                "auth": authID,
+                "id": 1
+            })
+
+        request = urllib2.Request(API,data)
+        for key in HEADERS:
+            request.add_header(key,HEADERS[key])
+        try:
+            result = urllib2.urlopen(request)
+        except URLError as e:
+            print "Error as ", e
+        else:
+            response = json.loads(result.read())
+            print "host %s is deleted." % (host)
+
+def delete_group(API,HEADERS,NODE,lists):
+    authID = get_auth(API,HEADERS)
+    group_name = re.search(r"\D{3}\-\D{2}\-\w{3,4}",NODE).group()
+    groupid = get_groupid(API,HEADERS,group_name)
+    id = groupid[0]['groupid']
+    
+    data = json.dumps(
+        {
+            "jsonrpc": "2.0",
+            "method": "hostgroup.delete",
+            "params": [
+                id
+            ],
+            "auth": authID,
+            "id": 1
+        })
+
+    request = urllib2.Request(API,data)
+    for key in HEADERS:
+        request.add_header(key,HEADERS[key])
+    try:
+        result = urllib2.urlopen(request)
+    except URLError as e:
+        print "Error as ", e
+    else:
+        response = json.loads(result.read())
+        print "group %s is deleted." % (group_name)
+
 def main():
-    API = "http://10.0.2.52:8080/zabbix/api_jsonrpc.php"
-    HEADERS = {"Content-type": "application/json"}
+    API = "http://zabbix-old.x.upyun.com/api_jsonrpc.php"
+    HEADERS = {"Content-type": "application/json","Apikey": "OECV8pjJDekyNKu87rLfdXujh4fUpFT2"}
     lists = sys.argv[1]
     METHOD = sys.argv[2]
     NODE = sys.argv[3]
@@ -297,7 +360,8 @@ def main():
     if METHOD == "add" :
         create_host(API,HEADERS,NODE,lists)
     elif METHOD == "del":
-        pass
+        delete_host(API,HEADERS,NODE,lists)
+        delete_group(API,HEADERS,NODE,lists)
     elif METHOD == "disable":
         disable_host(API,HEADERS,NODE,lists)
     else:
