@@ -60,9 +60,10 @@ def get_ssq_result():
 		blue_num = latest["blue"]
 		first_prize = latest["prizegrades"][0]["typemoney"]
 		second_prize = latest["prizegrades"][1]["typemoney"]
-		return open_date,code,red_num,blue_num,first_prize,second_prize
 	except Exception as e:
 		print e
+	
+	return open_date,code,red_num,blue_num,first_prize,second_prize
 
 def calcucate():
 	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
