@@ -14,15 +14,15 @@ agent_id = "1000002"
 secret = "4PT63xZksOFe7Si087pRVaHEwLKLAV2GTgLCoetzf0c"
 
 wen = {'red': [7,12,16,21,27,31], 'blue': '13'}
-yue = {'red': [3,7,8,16,18,29], 'blue': '6'}
-chen = {'red': [6,7,9,18,19,27], 'blue': '7'}
-peng = {'red': [4,12,19,26,28,31], 'blue': '5'}
+yue = {'red': [3,7,8,16,18,29], 'blue': '06'}
+chen = {'red': [6,7,9,18,19,27], 'blue': '07'}
+peng = {'red': [4,12,19,26,28,31], 'blue': '05'}
 jian = {'red': [2,9,16,20,21,31], 'blue': '11'}
 
 duliu = {'red': [1,3,5,8,22,23], 'blue': '14'}
-shisan = {'red': [8,10,20,21,22,23], 'blue': '9'}
-fan = {'red': [4,7,11,13,16,25], 'blue': '1'}
-yong = {'red': [8,18,19,25,29,30], 'blue': '3'}
+shisan = {'red': [8,10,20,21,22,23], 'blue': '09'}
+fan = {'red': [4,7,11,13,16,25], 'blue': '01'}
+yong = {'red': [8,18,19,25,29,30], 'blue': '03'}
 wen2 = {'red': [1,7,8,9,17,23], 'blue': '10'}
 
 team_one = {"wen": wen, "yue": yue, "chen": chen, "peng": peng, "jian": jian}
@@ -58,28 +58,28 @@ def get_ssq_result():
 		code = latest["code"]
 		red_num = latest["red"]
 		blue_num = latest["blue"]
-		first_prize = latest["prizegrades"][0]["typemoney"]
-		second_prize = latest["prizegrades"][1]["typemoney"]
+#		first_prize = latest["prizegrades"][0]["typemoney"]
+#		second_prize = latest["prizegrades"][1]["typemoney"]
 	except Exception as e:
 		print e
 	
-	return open_date,code,red_num,blue_num,first_prize,second_prize
+#	return open_date,code,red_num,blue_num,first_prize,second_prize
+	return open_date,code,red_num,blue_num
 
 def calcucate():
-	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
+#	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
+	open_date,code,red_num,blue_num = get_ssq_result()
 	
-	first_prize = int(first_prize)
-	second_prize = int(second_prize)
-	third_prize = 3000
-	fourth_prize = 200
-	fifth_prize = 10
-	sixth_prize = 5
+#	first_prize = int(first_prize)
+#	second_prize = int(second_prize)
+#	third_prize = 3000
+#	fourth_prize = 200
+#	fifth_prize = 10
+#	sixth_prize = 5
 	red_num = red_num.split(',')
 	red_num = map(int,red_num)
 	
-	award_one = 0
-	awards_one = []
-	winners_one = []
+	result_one = {}
 	
 	for winner in team_one:
 		r_red = team_one[winner]['red']
@@ -88,37 +88,25 @@ def calcucate():
 		right_red_num = len(check)
 		if r_blue == blue_num:
 			if right_red_num == 3:
-				awards_one.append(fifth_prize)
-				winners_one.append(winner)
+				result_one[winner] = "五等奖"
 			elif right_red_num == 4:
-				awards_one.append(fourth_prize)
-				winners_one.append(winner)
+				result_one[winner] = "四等奖"
 			elif right_red_num == 5:
-				awards_one.append(third_prize)
-				winners_one.append(winner)
+				result_one[winner] = "三等奖"
 			elif right_red_num == 6:
-				awards_one.append(first_prize)
-				winners_one.append(winner)
+				result_one[winner] = "一等奖"
 			else:
-				awards_one.append(sixth_prize)
-				winners_one.append(winner)
+				result_one[winner] = "六等奖"
 		else:
 			if right_red_num == 4:
-				awards.append(fifth_prize)
-				winners.append(winner)
+				result_one[winner] = "五等奖"
 			elif right_red_num == 5:
-				awards.append(fourth_prize)
-				winners.append(winner)
+				result_one[winner] = "四等奖"
 			elif right_red_num == 6:
-				awards.append(second_prize)
-				winners.append(winner)
+				result_one[winner] = "二等奖"
 		
-	for i in awards_one:
-		award_one = award_one + i
-			
-	award_two = 0
-	awards_two = []
-	winners_two = []
+
+	result_two = {}
 	
 	for winner in team_two:
 		r_red = team_two[winner]['red']
@@ -127,54 +115,51 @@ def calcucate():
 		right_red_num = len(check)
 		if r_blue == blue_num:
 			if right_red_num == 3:
-				awards_two.append(fifth_prize)
-				winners_two.append(winner)
+				result_two[winner] = "五等奖"
 			elif right_red_num == 4:
-				awards_two.append(fourth_prize)
-				winners_two.append(winner)
+				result_two[winner] = "四等奖"
 			elif right_red_num == 5:
-				awards_two.append(third_prize)
-				winners_two.append(winner)
+				result_two[winner] = "三等奖"
 			elif right_red_num == 6:
-				awards_two.append(first_prize)
-				winners_two.append(winner)
+				result_two[winner] = "一等奖"
 			else:
-				awards_two.append(sixth_prize)
-				winners_two.append(winner)
+				result_two[winner] = "六等奖"
 		else:
 			if right_red_num == 4:
-				awards_two.append(fifth_prize)
-				winners_two.append(winner)
+				result_two[winner] = "五等奖"
 			elif right_red_num == 5:
-				awards_two.append(fourth_prize)
-				winners_two.append(winner)
+				result_two[winner] = "四等奖"
 			elif right_red_num == 6:
-				awards_two.append(second_prize)
-				winners_two.append(winner)
+				result_two[winner] = "二等奖"	
 
-	for i in awards_two:
-		award_two = award_two + i		
-
-	return award_one,award_two,winners_one,winners_two
+#	return award_one,award_two,winners_one,winners_two
+	return result_one,result_two
 
 def send_to_wechat():
 	token = get_token()
-	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
-	award_one,award_two,winners_one,winners_two = calcucate()
+#	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
+	open_date,code,red_num,blue_num = get_ssq_result()
+	result_one,result_two = calcucate()
 	header = {"Content-type": "application/json", "charset": "utf-8"}
 	
 	user_one = ""
 	user_two = ""
-	if winners_one:
-		for user in winners_one:
-			user_one = index_team_one[user] + "," + user_one	
+	prize_one = ""
+	prize_two = ""
+	if result_one:
+		for winner in result_one:
+			user_one = index_team_one[winner] + "," + user_one	
+			prize_one = result_one[winner] + "," + prize_one
 	else:
+		prize_one = "无"
 		user_one = "无"
 		
-	if winners_two:
-		for user in winners_two:
-			user_two = index_team_two[user] + "," + user_two
+	if result_two:
+		for winner in result_two:
+			user_two = index_team_two[winner] + "," + user_two
+			prize_two = result_two[winner] + "," + prize_two
 	else:
+		prize_two = "无"
 		user_two = '无'
 	
 	to_user = '@all'
@@ -182,12 +167,10 @@ def send_to_wechat():
 开奖期号:  %s,
 红球编号:  %s,
 蓝球编号:  %s,
-本期一等奖奖金:  %s,
-本期二等奖奖金:  %s,
-一号小分队奖金: %s 元,
-二号小分队奖金: %s 元,
+一号小分队中奖: %s 
+二号小分队中奖: %s 
 一号小分队中奖者: %s
-二号小分队中奖者: %s""" % (open_date,code,red_num,blue_num,first_prize,second_prize,award_one,award_two,user_one,user_two)
+二号小分队中奖者: %s""" % (open_date,code,red_num,blue_num,prize_one,prize_two,user_one,user_two)
 	send_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s" % (token)
 	
 	data = json.dumps(
