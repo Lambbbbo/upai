@@ -5,6 +5,7 @@ import json
 import urllib2
 import re
 import sys
+from wxpy import *
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -17,11 +18,13 @@ wen = {'red': [7,12,16,21,27,31], 'blue': '13'}
 yue = {'red': [3,7,8,16,18,29], 'blue': '06'}
 chen = {'red': [6,7,9,18,19,27], 'blue': '07'}
 peng = {'red': [4,12,19,26,28,31], 'blue': '05'}
+#peng = {'red': [4,12,19,26,28,31], 'blue': '12'}
 jian = {'red': [2,9,16,20,21,31], 'blue': '11'}
 
 duliu = {'red': [1,3,5,8,22,23], 'blue': '14'}
 shisan = {'red': [8,10,20,21,22,23], 'blue': '09'}
 fan = {'red': [4,7,11,13,16,25], 'blue': '01'}
+#fan = {'red': [4,7,11,13,16,25], 'blue': '12'}
 yong = {'red': [8,18,19,25,29,30], 'blue': '03'}
 wen2 = {'red': [1,7,8,9,17,23], 'blue': '10'}
 
@@ -135,11 +138,66 @@ def calcucate():
 #	return award_one,award_two,winners_one,winners_two
 	return result_one,result_two
 
+def record_result():
+	result_one,result_two = calcucate()
+	prize_index = {"三等奖": 3000,"四等奖": 200,"五等奖": 10,"六等奖": 5}
+	
+	bonus_one = []
+	for bonus in result_one.values():
+		bonus_one.append(prize_index[bonus])
+	
+	bonus_two = []
+	for bonus in result_two.values():
+		bonus_two.append(prize_index[bonus])
+	
+	bonus_1 = 0
+	for i in bonus_one:
+		bonus_1 = bonus_1 + i
+	
+	bonus_2 = 0
+	for i in bonus_two:
+		bonus_2 = bonus_2 + i
+		
+	with open('/tmp/team_one.txt','r+') as f:
+		total_bonus_one = int(f.readline().split(':')[1])
+		total_pay_one = int(f.readline().split(':')[1])
+		total_return_one = int(f.readline().split(':')[1])
+		
+		total_bonus_one = bonus_1 + total_bonus_one
+		total_pay_one = total_pay_one + 20
+		total_return_one = int(round(float(total_bonus_one) / total_pay_one,2) * 100)
+		
+		f.seek(0)
+		f.truncate()
+		f.write("bonus:" + str(total_bonus_one))
+		f.write("\npay:" + str(total_pay_one))
+		f.write("\nreturn:" + str(total_return_one))
+		f.close()
+	
+	with open('/tmp/team_two.txt','r+') as f:
+		total_bonus_two = int(f.readline().split(':')[1])
+		total_pay_two = int(f.readline().split(':')[1])
+		total_return_two = int(f.readline().split(':')[1])
+		
+		total_bonus_two = bonus_2 + total_bonus_two
+		total_pay_two = total_pay_two + 20
+		total_return_two = int(round(float(total_bonus_two) / total_pay_two,2) * 100)
+		
+		f.seek(0)
+		f.truncate()
+		f.write("bonus:" + str(total_bonus_two))
+		f.write("\npay:" + str(total_pay_two))
+		f.write("\nreturn:" + str(total_return_two))
+		f.close()
+	
+	return bonus_1,bonus_2,total_bonus_one,total_return_one,total_bonus_two,total_return_two
+
 def send_to_wechat():
 	token = get_token()
 #	open_date,code,red_num,blue_num,first_prize,second_prize = get_ssq_result()
 	open_date,code,red_num,blue_num = get_ssq_result()
 	result_one,result_two = calcucate()
+	bonus_1,bonus_2,total_bonus_one,total_return_one,total_bonus_two,total_return_two = record_result()
 	header = {"Content-type": "application/json", "charset": "utf-8"}
 	
 	user_one = ""
@@ -167,10 +225,16 @@ def send_to_wechat():
 开奖期号:  %s,
 红球编号:  %s,
 蓝球编号:  %s,
+------------------------
 一号小分队中奖: %s 
-二号小分队中奖: %s 
 一号小分队中奖者: %s
-二号小分队中奖者: %s""" % (open_date,code,red_num,blue_num,prize_one,prize_two,user_one,user_two)
+一号小分队奖金总额: %d元
+一号小分队回报率: %d
+------------------------
+二号小分队中奖: %s 
+二号小分队中奖者: %s
+二号小分队奖金总额: %d元
+二号小分队回报率: %d """ % (open_date,code,red_num,blue_num,prize_one,user_one,total_bonus_one,total_return_one,prize_two,user_two,total_bonus_two,total_return_two)
 	send_url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s" % (token)
 	
 	data = json.dumps(
