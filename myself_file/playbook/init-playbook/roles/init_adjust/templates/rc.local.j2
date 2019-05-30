@@ -1,7 +1,6 @@
 #!/bin/sh
 ifenslave bond0 eth0 eth1 eth2 eth3 eth4 eth5
 ifconfig bond0:0 192.168.{{ ansible_ssh_host.split('.')[2] }}.{{ ansible_ssh_host.split('.')[3] }} netmask 255.255.255.0
-sed -r -i '/192.168/d' /etc/resolv.conf
 
 #
 # This script will be executed *after* all the other init scripts.

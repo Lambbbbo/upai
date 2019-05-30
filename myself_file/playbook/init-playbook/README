@@ -1,5 +1,5 @@
 示例：
-ansible-playbook -i hosts main.yml -e "YUN=network_type node=(hostname|groupname)"
+ansible-playbook -i hosts main.yml -e "YUN=network_type node=(hostname|groupname)" -t "upyun|dnion"
 
 network_type: CTC | CNC | CMC | ORG | PCW
 node: 指定该playbook生效范围，可指定单台主机，也可指定group对组生效
@@ -10,3 +10,7 @@ node: 指定该playbook生效范围，可指定单台主机，也可指定group�
 指定network_type时，playbook会执行以下2个相关动作：
 1、修改upyun.cfg中的NETWORK字段，修改为指定的network_type
 2、修改upyun.cfg中的CACHE_PEER字段，内容为原set.peer.yml指定相关tag时所传递的内容。
+
+-t 指定tags时，可以选择upyun或dnion，区别在于：
+当该组待推送机器属于又拍机房时，指定-t upyun，可不推送em监控程序。
+当该组待推送机器属于帝网机房时，指定-t dnion，会推送em监控程序安装。

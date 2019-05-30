@@ -1,0 +1,5 @@
+src_pack: "em_client.tar.gz"
+install_pack: "em_client_install.tar.gz"
+em_client: "http://ahern-file.b0.upaiyun.com/upyun/em_client.tar.gz"
+workdir: "/tmp/em"
+em_paths: "{{ workdir }}/em_client_install"

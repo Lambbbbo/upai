@@ -3,7 +3,7 @@
   run_once: true
 
 - name: make peer file
-  local_action: script "get_v406_ip.sh"
+  local_action: script get_v406_ip.sh
 
 - name: get network type
   shell: cat /etc/upyun.cfg | grep NETWORK | awk -F\" '{print $2}'
@@ -11,48 +11,38 @@
 
 - name: modify CACHE_PEER when CTN
   replace:
-    path: /etc/upyun.cfg
+    dest: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
     replace: '\1.#{{ CTC }}"'
   when: net_result.stdout == "CTC"
 
 - name: modify CACHE_PEER when CUN
   replace:
-    path: /etc/upyun.cfg
+    dest: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
     replace: '\1.#{{ CNC }}"'
   when: net_result.stdout == "CNC"
 
 - name: modify CACHE_PEER when CMN
   replace:
-    path: /etc/upyun.cfg
+    dest: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
     replace: '\1.#{{ CMC }}"'
   when: net_result.stdout == "CMC"
 
 - name: modify CACHE_PEER when ORG
   replace:
-    path: /etc/upyun.cfg
+    dest: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
     replace: '\1.#{{ ORG }}"'
   when: net_result.stdout == "ORG"
 
 - name: modify CACHE_PEER when PCW
   replace:
-    path: /etc/upyun.cfg
+    dest: /etc/upyun.cfg
     regexp: '^(CACHE_PEER=\").*(\")'
     replace: '\1.#{{ PCW }}"'
   when: net_result.stdout == "PCW"
-
-- name: get inner ip
-  shell: ifconfig|sed -r -n '/192.168.*Bcast/s#.* addr:(.*) Bcast.*#\1#gp'|head -1 | awk '{print $1}'
-  register: ip_result
-
-- name: modify NGINX_UPSTREAM in upyun.cfg
-  lineinfile:
-    dest: /etc/upyun.cfg
-    regexp: '^NGINX_UPSTREAM='
-    line: NGINX_UPSTREAM="{{ ip_result.stdout }}#1"
 
 - name: do soft link libcrypto
   file: 
@@ -74,13 +64,13 @@
 
 - name: modify upyun cron step 1
   replace:
-    path: /etc/cron.d/upyun
+    dest: /etc/cron.d/upyun
     regexp: '#(.*upyun_cdn_health.sh.*)'
     replace: '\1'
 
 - name: modify upyun cron step 2
   replace:
-    path: /etc/cron.d/upyun
+    dest: /etc/cron.d/upyun
     regexp: '#(.*log_io.*)'
     replace: '\1'
 

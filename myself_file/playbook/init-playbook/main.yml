@@ -1,0 +1,6 @@
+---
+- hosts: "{{ node }}"
+  roles:
+    - { role: init_adjust, tags: ["upyun", "dnion"] }
+    - { role: cdn_set, tags: ["upyun", "dnion"] }
+    - { role: em_install, tags: ["dnion", "em"] }

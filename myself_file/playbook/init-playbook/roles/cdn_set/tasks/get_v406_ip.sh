@@ -56,6 +56,24 @@ get_cmc(){
   echo CMC: \"$ips\" >> roles/cdn_set/vars/main.yml
 }
 
+get_pcw(){
+  declare -a array
+  array=(`cat $FILE | grep -i abroad | awk -F "[# ]+" '{print $2}'`)
+  length=${#array[@]}
+  num=1
+  ips=''
+  for ip in ${array[@]};do
+    if [ $num -lt $length ];then
+      IP=${ip}:406@
+    else
+      IP=${ip}:406
+    fi
+    ips=$ips$IP
+    let num++
+  done
+  echo PCW: \"$ips\" >> roles/cdn_set/vars/main.yml
+}
+
 get_org(){
   ips=`awk -F '"' '{print $2}' roles/cdn_set/vars/main.yml | xargs | sed "s/ /@/g"`
   echo ORG: \"$ips\" >> roles/cdn_set/vars/main.yml
@@ -64,4 +82,5 @@ get_org(){
 get_ctc
 get_cnc
 get_cmc
+get_pcw
 get_org

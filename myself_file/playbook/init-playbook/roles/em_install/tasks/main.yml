@@ -1,0 +1,30 @@
+- name: create workdir
+  file: path={{ workdir }} state=directory
+
+- name: get em package
+  get_url: url={{ em_client }} dest={{ workdir }}
+
+- name: unarchive em package
+  unarchive: 
+    src: "{{ workdir }}/{{ src_pack }}"
+    dest: "{{ workdir }}"
+    copy: no
+
+- name: move file 
+  shell: mv {{ workdir }}/{{ item }}.sh /usr/bin/{{ item }}; chmod 0755 /usr/bin/{{ item }}
+  with_items:
+    - "getconf"
+    - "killall"
+    - "pgrep"
+
+- name: unarchive install package
+  unarchive:
+    src: "{{ workdir }}/{{ install_pack }}"
+    dest: "{{ workdir }}"
+    copy: no
+
+- name: install em 
+  shell: cd {{ em_paths }}; bash install.sh
+
+- name: clear package
+  file: path={{ workdir }} state=absent

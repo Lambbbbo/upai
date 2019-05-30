@@ -3,5 +3,5 @@ TMP_DEV: "/disk/ssd1/tmp"
 TMP_SSD_DEV: "/disk/ssd1/tmp"
 
 work_path: "/tmp/ansible_init"
-conf_repo: "ssh://gitlab@gitlab.widget-inc.com:65422/infrastructure/inventory.git"
+conf_repo: "ssh://git@gitlab.s.upyun.com:18022/infrastructure/inventory.git"
 conf_path: "{{ work_path }}"

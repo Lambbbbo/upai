@@ -7,14 +7,23 @@
 - name: source upyun.cfg
   shell: source /etc/upyun.cfg && sed -r -i "s:CentOS:$HOSTNAME:g" /etc/system-release
 
-- name: modify network file
+- name: template network file
   template: src=network.j2 dest=/etc/sysconfig/network
 
-- name: modify hosts file
+- name: template hosts file
   template: src=hosts.j2 dest=/etc/hosts
 
-- name: modify profile file
+- name: template profile file
   template: src=profile.j2 dest=/etc/profile
+
+- name: template upyun.cfg
+  template: src=upyun.cfg.j2 dest=/etc/upyun.cfg
+
+- name: modify hostname
+  shell: hostname {{ inventory_hostname }}
+
+- name: modify crond
+  lineinfile: dest=/etc/cron.d/upyun line='1 1 * * * root (/usr/sbin/tmpwatch -m -af 720 /disk/ssd1/logs/upstats_volume)'
 
 - name: change dns when mainland
   lineinfile:
@@ -30,6 +39,9 @@
     line: 'DNS="8.8.8.8"'
   when: inventory_hostname.split('-')[0] in ['NTT','GTT','PCW','SGT']
 
+- name: change bond mode to 2
+  shell: sed -i "/^BONDING/s/\(.*eth5|\)0|\(.*\)/\12|\2/" /network.info
+
 - name: check if intel netcard
   shell: dmesg |grep -i eth|grep -iq intel
   register: net_result
@@ -37,6 +49,43 @@
 
 - name: modify rc.local file
   template: src=rc.local.j2 dest=/etc/rc.d/rc.local mode=0755
+
+- name: config private IP
+  shell: ifconfig bond0:0 192.168.{{ ansible_ssh_host.split('.')[2] }}.{{ ansible_ssh_host.split('.')[3] }} netmask 255.255.255.0
+
+- name: check if iommu_off
+  shell: cat /boot/grub/grub.cfg | grep 'intel_iommu' &> /dev/null
+  register: iommu_result
+  failed_when: "'FAILED' in iommu_result.stderr"
+
+- name: add iommu_off to grub
+  replace:
+    dest: /boot/grub/grub.cfg
+    regexp: '(.*KEYTABLE.*)'
+    replace: '\1 "intel_iommu=off"'
+  when: iommu_result.rc == 1
+
+- name: check if U disk exists
+  shell: fdisk -l |grep MB
+  register: disk_result
+  failed_when: "'FAILED' in disk_result.stderr"
+
+- name: mount U DISK
+  shell: mount `fdisk -l | grep MB | awk -F "[ :]+" '{print $2}'`1 /mnt
+  register: udisk_result
+  failed_when: "'FAILED' in disk_result.stderr"
+  when: disk_result.rc == 0
+
+- name: add iommu_off to U DISK grub
+  replace:
+    dest: /mnt/boot/grub/menu.lst
+    regexp: '(.*KEYTABLE.*)'
+    replace: '\1 intel_iommu=off'
+  when: disk_result.rc == 0 and udisk_result.rc == 0
+
+- name: umount U disk
+  shell: umount /mnt
+  when: disk_result.rc == 0 and udisk_result.rc == 0
 
 - name: soft link for rc.local
   file: 
@@ -49,6 +98,7 @@
     src: /usr/local/bin/python
     dest: /usr/bin/python
     state: link
+    force: yes
 
 - name: modify /etc/passwd
   shell: sed -r -i '/^[^root]/s:/bin/bash:/sbin/nologin:g' /etc/passwd
@@ -125,11 +175,14 @@
     dest: /etc/sysctl.conf
     regexp: '^net.ipv4.tcp_congestion_control='
     line: 'net.ipv4.tcp_congestion_control=bbr'
-  when: ansible_kernel == "4.9.0-rc3.bbr.upyun"
+  when: ansible_kernel.split('-')[0] == "4.9.0"
 
 - name: load kernal parameter
-  shell: sysctl -p > /dev/null
+  shell: sysctl -p > /dev/null 2>&1
   ignore_errors: true
+
+- name: change /dev/null
+  file: dest=/dev/null mode=0666
 
 - name: modify sshd_config
   lineinfile:
@@ -147,7 +200,7 @@
   shell: source /etc/upyun.cfg && sed -r -i "/^Port/s:.*:Port $SSHD_PORT:" /etc/ssh/sshd_config
 
 - name: check the authorized_keys
-  shell: egrep -i -c "kvm|ahua|yousri" /root/.ssh/authorized_keys
+  shell: egrep -i -c "kvm|ahua" /root/.ssh/authorized_keys
   register: ssh_result
 
 - name: modify password ssh
@@ -172,7 +225,6 @@
 - name: adjust time_zone
   shell: "{{ item }}" 
   with_items:      
-    - source /etc/upyun.cfg && ntpdate -o3 $TIME_SRV
     - source /etc/upyun.cfg && sed -r -i "/ntpdate/s:(.*) -o3.*:\1 -o3 0.pool.ntp.org $TIME_SRV):g" /etc/cron.d/upyun
   ignore_errors: true
 
