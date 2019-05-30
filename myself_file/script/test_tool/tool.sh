@@ -404,11 +404,11 @@ case "$1" in
             req_uri=`echo $url | sed "s/${host}/${ip}/"`
             sign=1
 	    curl_url
-            net_test
+#            net_test
             shift 3
         else
 	    curl_url
-            net_test
+#            net_test
             shift 2
         fi
         if [ -z $1 ];then
