@@ -13,6 +13,7 @@ class get_var(object):
 	def __init__(self, module, metadata):
 		self.module = module
 		self.facts = metadata
+		self.action = self.module.params["action"]
 		self.hostid = self.module.params["hostid"]
 		self.clusterid = self.module.params["clusterid"]
 		self.cluster_API = ENERU_API + "clusters/" + self.clusterid + "/hosts"
@@ -29,7 +30,7 @@ class get_var(object):
 			req_host = requests.get(host_API, headers=headers)
 			res = json.loads(req_host.content)
 			p_ip.append(res["private_ipaddrs"])
-		facts["target_host"] = p_ip 
+		facts["target_host"] = p_ip 					#获取target_host的私网ip
 		
 		result = json.loads(req_allhost.content)
 		p_ips = []
@@ -38,11 +39,16 @@ class get_var(object):
 			p_ips.append(private_ip)					#获取当前集群内机器的私网ip
 		
 		NGINX_UPSTREAM = copy.copy(p_ips)
-		for i in p_ip:	
-			if i in p_ips:
-				NGINX_UPSTREAM.remove(i)					#判断当target_host已在集群内，则移除target_host，生成upstream推送配置
-			else:
-				NGINX_UPSTREAM.append(i)					#判断当target_host不在集群内，则新增target_host，生成upstream推送配置
+		for i in p_ip:
+			if self.action == "del":
+				try:
+					NGINX_UPSTREAM.remove(i)					
+				except ValueError:
+					return dict(failed=True, msg='target_host %s not in upstream now' % (i))
+			elif self.action == "add":
+				if i not in p_ips:
+					NGINX_UPSTREAM.append(i)					
+		
 			
 		facts["NGINX_UPSTREAM"] = NGINX_UPSTREAM
 
@@ -73,10 +79,10 @@ class get_var(object):
 				r_ips.append(h["addr"])			#获取当前集群内机器的公网ip
 		facts["REAL_HOSTS"] = r_ips
 		
-		res_vip = json.loads(req_vip.content)
+		res_vip = json.loads(req_vip)
 		vip_list = {}
 		for vip in res_vip["public_ipaddrs"]:
-			vip_list[vip["addr"]] = vip["netmask"]
+			vip_list[vip[addr]] = vip[netmask]
 		facts["VIP"] = vip_list
 		
 		return facts
@@ -86,19 +92,19 @@ class Fetch(object):
 	def __init__(self, module):
 		self.module = module
 		self.facts = {}
-		self.action = self.module.params["action"]
+		self.info = self.module.params["info"]
 		
 	def run(self):
 		meta = get_var(self.module, self.facts)
-		if hasattr(meta, self.action):
-			self.facts.update(**getattr(meta, self.action)())
-
+		if hasattr(meta, self.info):
+			self.facts.update(**getattr(meta, self.info)())
 
 def main():
 	module = AnsibleModule(argument_spec=dict(
 		hostid=dict(required=True),
 		clusterid=dict(required=True),
-		action=dict(required=True)))
+		action=dict(default=None),
+		info=dict(required=True)))
 	
 	fetch = Fetch(module)
 	fetch.run()
