@@ -1,0 +1,7 @@
+---
+  - name: check backup direcotry
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+       - "{{ prefix_path }}"
+       - /disk/ssd1/logs/supervisor
+       - /disk/sata1/redis_data

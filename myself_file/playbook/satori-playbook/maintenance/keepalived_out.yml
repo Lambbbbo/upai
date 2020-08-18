@@ -1,0 +1,11 @@
+#note: 移除keepalived
+#danger: 6
+
+- name: change state in keepalived.conf
+  shell: sed -r -i '/state/{s/MASTER/BACKUP/}' /usr/local/keepalived/etc/keepalived.conf
+
+- name: change priority in keepalived.conf
+  shell: sed -r -i '/priority/{s/.*/\    priority 80/}' /usr/local/keepalived/etc/keepalived.conf
+
+- name: stop and disable keepalived
+  service: name=keepalived state=stopped enabled=no

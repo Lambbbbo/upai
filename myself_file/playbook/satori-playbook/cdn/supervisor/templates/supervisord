@@ -1,0 +1,63 @@
+#!/bin/bash
+# description:  supervisor is a process control utility.  It has a web based
+#               xmlrpc interface as well as a few other nifty features.
+# processname:  supervisord
+# config: /etc/supervisord.conf
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+exec=/usr/local/bin/supervisord
+prog=$(basename $exec)
+conf="/etc/supervisord.conf"
+lock="/var/lock/subsys/supervisord"
+pidfile=$(awk -F "=" '/pidfile/{print $2}' $conf)
+log_dir=$(awk -F "=" '/childlogdir/{print $2}' $conf)
+
+[ -d $log_dir ] || mkdir $log_dir
+
+RETVAL=0
+
+start() {
+	echo -n $"Starting $prog: "
+	daemon $exec -c $conf
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch $lock
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+        killproc -p $pidfile $prog
+	echo
+	[ $RETVAL -eq 0 ] && rm -f $lock
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|force-reload|reload)
+	restart
+	;;
+  condrestart)
+	[ -f $lock ] && restart
+	;;
+  status)
+        status -p $pidfile $prog
+	RETVAL=$?
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+	exit 1
+esac
+
+exit $RETVAL

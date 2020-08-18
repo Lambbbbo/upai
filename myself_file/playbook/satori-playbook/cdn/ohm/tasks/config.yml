@@ -1,0 +1,31 @@
+---
+  - name: create ansible work directory
+    local_action: file path={{ work_path }} state=directory mode=0755
+    run_once: true
+  - name: update conf
+    local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+    run_once: true
+  - name: create conf directory
+    with_items:
+      - "/usr/local/ohm/nginx/conf/{{ project }}"
+      - "/usr/local/ohm/nginx/app/etc/"
+      - "/usr/local/ohm/nginx/sbin/"
+      - "/usr/local/ohm/nginx/logs/"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+  - name: sync config
+    synchronize: src={{ src_conf_path }}/conf/ dest=/usr/local/ohm/nginx/conf/ rsync_opts=["--exclude={{ project }}"]
+  - name: sync config
+    synchronize: src={{ src_conf_path }}/conf/{{ project }}/ dest=/usr/local/ohm/nginx/conf/{{ project }}/ delete=yes
+  - name: sync template
+    template: src={{ src_conf_path }}/{{ item }} dest=/usr/local/ohm/nginx/{{ item }}
+    with_items:
+      - "app/etc/config.lua"
+      - "conf/nginx.conf"
+      - "conf/ohm/ohm.conf"
+      - "conf/ohm/nsq_stream.conf"
+      - "sbin/nginx"
+  - name: change nginx perm
+    file: dest=/usr/local/ohm/nginx/sbin/nginx mode=a+x

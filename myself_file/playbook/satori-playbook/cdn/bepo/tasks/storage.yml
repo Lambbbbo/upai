@@ -1,0 +1,5 @@
+---
+- name: bepo reload
+  command: "{{ item }}"
+  with_items:
+    - "/etc/init.d/bepo storage init -i"

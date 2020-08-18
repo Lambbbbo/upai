@@ -1,0 +1,7 @@
+#note: nmap
+#arg: host, type: host, 目标机器ip或域名
+#arg: port, type: int, 目标端口
+#danger: 0
+
+- name: test port
+  shell: nc -zv "{{ host }}" "{{ port }}"

@@ -1,0 +1,10 @@
+---
+- name: make updns stats path
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ main_path }}/updns-stats"
+
+- name: sync supervisor config
+  template: src={{ src_conf_path }}/supervisor.d/{{ item }} dest={{ supervisor_path }}/{{ item }}
+  with_items:
+    - updns-stats.conf

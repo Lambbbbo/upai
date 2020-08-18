@@ -1,0 +1,3 @@
+---
+- name: clear machine.bl
+  file: path=/usr/local/bepo/bc/etc/machine.bl state=absent

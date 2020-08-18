@@ -1,0 +1,61 @@
+# note: 系统初始化-Centos7
+# danger: 6
+
+- name: change hostname
+  template: src=hostname.j2 dest=/etc/hostname
+
+- name: install epel
+  yum: name=epel-release state=installed
+
+- name: install necessary service
+  yum: name={{ item }} state=installed
+  with_items:
+    - supervisor
+    - wget
+    - rsync
+    - bind-utils
+    - nc
+
+- name: change limits.conf
+  template: src=limits.conf.j2 dest=/etc/security/limits.conf
+
+- name: check if irqbalance is install
+  shell: rpm -qa | grep irqbalance &> /dev/null
+  register: result
+  failed_when: "'FAILED' in result.stderr" 
+
+- name: stop iptables service
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+    - firewalld
+
+- name: stop irqbalance service
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+    - irqbalance
+  when: result.rc == 0
+
+- name: start necessary service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - supervisord
+ 
+- name: stop selinux
+  replace: dest=/etc/selinux/config regexp='^SELINUX=.*' replace='SELINUX=disabled'
+
+- name: create necessary directory
+  file: dest=/disk/ssd1 state=directory mode=1777 
+
+- name: template script
+  copy: src=templates/{{ item }} dest=/usr/local/sbin/{{ item }} mode=0755
+  with_items:
+    - set_rps.sh
+    - net_smp_affinity.sh
+
+- name: modify rc.local
+  lineinfile:
+    dest: /etc/rc.d/rc.local
+    line: "{{ item }}"
+  with_items:
+    - /usr/local/sbin/set_rps.sh >/tmp/setRps.log 2>&1
+    - /usr/local/sbin/net_smp_affinity.sh >/tmp/net_affinity.log 2>&1

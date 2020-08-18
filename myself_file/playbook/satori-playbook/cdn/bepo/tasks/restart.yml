@@ -1,0 +1,6 @@
+---
+- name: bepo restart
+  run_once: true
+  delegate_to: "{{ item }}"
+  with_items: '{{ play_hosts }}'
+  shell: "/etc/init.d/bepo restart && sleep 5"

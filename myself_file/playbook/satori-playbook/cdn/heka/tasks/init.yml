@@ -1,0 +1,5 @@
+---
+  - name: make need path
+    file: path={{ item }} state=directory
+    with_items:
+      - "{{ log_path }}/heka"

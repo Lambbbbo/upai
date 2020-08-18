@@ -1,0 +1,22 @@
+---
+work_path: "/tmp/ansible"
+prefix_path: "/usr/local"
+
+conf_repo: "ssh://git@gitlab.s.upyun.com:18022/cdn-centre/conf.git"
+conf_path: "{{ work_path }}/{{ conf_hash | default('master') }}/{{ 100 |random(seed=inventory_hostname) }}"
+
+log_path: "/disk/ssd1/logs"
+backup_path: "/disk/ssd1/backup"
+init_path: "/etc/init.d"
+crond_path: "/etc/cron.d/upyun"
+
+project: "{{ role }}"
+main_path: "{{ prefix_path }}/{{ project }}"
+
+vivi_list:
+  ctn:
+    - 115.231.100.115
+  cun:
+    - 121.52.226.243
+  cmn:
+    - 112.17.251.4

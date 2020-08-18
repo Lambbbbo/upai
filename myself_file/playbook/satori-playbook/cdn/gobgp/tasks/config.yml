@@ -1,0 +1,5 @@
+---
+- name: sync template
+  template: src={{ src_conf_path }}/etc/{{ item }} dest={{ dest_conf_path }}/etc/{{ item }}
+  with_items:
+    - gobgp.yaml

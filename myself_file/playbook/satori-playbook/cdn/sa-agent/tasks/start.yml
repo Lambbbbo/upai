@@ -1,0 +1,10 @@
+---
+  - name: start servers
+    shell: "cd {{ prefix_path }}/sa/{{ role }}/bin/ ; ./server.sh start" 
+    register: info
+  - name: check Asset
+    shell: "cd {{ prefix_path }}/sa/{{ role }}/bin/ ; ./checkAsset.sh"
+    when: info.stdout.find("OK") != -1
+  - name: check Safe
+    shell: "cd {{ prefix_path }}/sa/{{ role }}/bin/ ; ./checkSafe.sh"
+    when: info.stdout.find("OK") != -1

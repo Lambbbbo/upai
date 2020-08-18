@@ -1,0 +1,5 @@
+#note: 加入keepalived
+#danger: 6
+
+- name: start keepalived
+  service: name=keepalived state=started enabled=yes

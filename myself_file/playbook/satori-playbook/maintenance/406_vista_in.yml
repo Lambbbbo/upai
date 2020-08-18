@@ -1,0 +1,17 @@
+#note: MIX加入vista
+#danger: 6
+#arg: private_ip
+
+- name: bepo in to node
+  shell: sed -r -i -e "/{{ private_ip }}:406/s@(server.*[s|buckup]).*@\1;@g" /usr/local/marco/nginx/conf/marco/upstream.conf
+
+- name: vista in from lvs
+  file:
+    path: /usr/local/vista/nginx/html/test.test
+    state: touch
+
+- name: reload marco
+  shell: /etc/init.d/marco reload
+
+- name: add # in upyun.cfg
+  shell: sed -r -i -e "/NGINX_UPSTREAM=/{s@#*({{ private_ip }})@\1@}" /etc/upyun.cfg

@@ -1,0 +1,15 @@
+CONSUL_BIN: "{{ main_path }}/bin/consul"
+CONSUL_PATH: "{{ main_path }}"
+CONSUL_DATA: "{{ log_path }}/consul/data"
+CONSUL_LOG: "{{ log_path }}/consul"
+CONSUL_CONF: "{{ main_path }}/conf/consul.json"
+CONSUL_SUPERSIOR_CONF: "{{ supervisor_path }}/consul.conf"
+CONSUL_JOIN_WAN_CTN: '[ "122.224.83.181", "122.224.83.182", "122.224.83.183", "122.224.83.184", "122.224.83.185" ]'
+CONSUL_JOIN_WAN_CUN: '[ "124.160.136.181","124.160.136.182","124.160.136.183","124.160.136.184","124.160.136.185" ]'
+CONSUL_JOIN_WAN_CMN: '[ "112.13.110.181","112.13.110.182","112.13.110.183","112.13.110.184","112.13.110.185" ]'
+CONSUL_JOIN_WAN_ORG: '[ "122.224.83.181", "122.224.83.182", "122.224.83.183", "122.224.83.184", "122.224.83.185", "124.160.136.181","124.160.136.182","124.160.136.183","124.160.136.184","124.160.136.185", "112.13.110.181","112.13.110.182","112.13.110.183","112.13.110.184","112.13.110.185" ]'
+
+UPYUN_DATACENTER_DC: "upyundc-vdo-zj-sad"
+CONSUL_REPLICATE_BIN: "{{ main_path }}/bin/consul-replicate"
+CONSUL_REPLICATE_CONF: "{{ main_path }}/conf/consul_replicate.hcl"
+CONSUL_REPLICATE_SUPERSIOR_CONF: "{{ supervisor_path }}/consul_replicate.conf"

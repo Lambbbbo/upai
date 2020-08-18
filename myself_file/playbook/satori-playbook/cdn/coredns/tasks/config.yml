@@ -1,0 +1,20 @@
+---
+  - name: create ansible work directory
+    local_action: file path={{ work_path }} state=directory mode=0755
+    run_once: true
+
+  - name: update conf
+    local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+    run_once: true
+
+  - name: copy supervisor.conf
+    copy: src={{ src_conf_path }}/supervisor.d/{{ project }}.conf dest={{ supervisor_path }}/
+
+  - name: copy domain file
+    synchronize: src={{ src_conf_path }}/etc/ dest={{ dest_conf_path }}/etc/ rsync_opts='--exclude=coredns.conf' delete=yes 
+
+  - name: fetch domain list
+    fetch_domain:
+
+  - name: copy coredns.conf
+    template: src={{ src_conf_path }}/etc/coredns.conf dest={{ dest_conf_path }}/etc/coredns.conf

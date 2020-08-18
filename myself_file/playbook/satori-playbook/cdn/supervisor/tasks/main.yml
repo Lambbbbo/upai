@@ -1,0 +1,7 @@
+---
+- include_vars: cdn/common/supervisor/vars/main.yml
+  tags:
+     - always
+- include_tasks: cdn/{{ project }}/tasks/init.yml
+  tags:
+     - init

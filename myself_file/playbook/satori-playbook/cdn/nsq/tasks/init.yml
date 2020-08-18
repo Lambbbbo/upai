@@ -1,0 +1,5 @@
+---
+  - name: check and mkdir directory
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+      - /disk/ssd1/nsq_queue

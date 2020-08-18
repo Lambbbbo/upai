@@ -1,0 +1,16 @@
+---
+- name: sync redis template
+  template: src={{ src_conf_path }}/redis/{{ item }} dest={{ dest_conf_path }}/redis/{{ item }}
+  with_items:
+    - redis_6379.conf
+    - redis_6380.conf
+    - redis_6381.conf
+    - redis_6382.conf
+
+- name: sync redis_supervisord.conf
+  template: src={{ src_conf_path }}/supervisor.d/redis_zico.conf dest={{ supervisor_path }}/
+
+- name: restart supervisor service
+  supervisorctl: name={{ item }} state=restarted
+  with_items:
+    - "redis_zico"

@@ -1,0 +1,17 @@
+---
+- name: create ansible work directory
+  local_action: file path={{ work_path }} state=directory mode=0755
+  run_once: true
+
+- name: update conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+  run_once: true
+
+- name: fetch plugin package
+  fetch_pack: "project=updns version={{ version }} dest={{ work_path }} component=plugin cdn={{ fetch_from_cdn | default(true) }}"
+  register: fetch_result
+- name: unarchive app package
+  unarchive:
+    src: "{{ work_path }}/{{ fetch_result.tar }}"
+    dest: "{{ prefix_path }}"
+    remote_src: yes

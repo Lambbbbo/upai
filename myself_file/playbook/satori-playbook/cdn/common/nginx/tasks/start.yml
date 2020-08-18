@@ -1,0 +1,4 @@
+---
+  - name: ngx start
+    command: "{{ main_path }}/nginx/sbin/nginx"
+    when: ngx_check.rc == 0

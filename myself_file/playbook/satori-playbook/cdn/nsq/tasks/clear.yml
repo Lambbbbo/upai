@@ -1,0 +1,7 @@
+---
+  - name: check nsqd supervisor conf
+    stat: path=/etc/supervisor.d/nsq-marco.conf
+    register: nsqd_conf_file
+  - name: rm nsq-marco.conf
+    command: rm /etc/supervisor.d/nsq-marco.conf
+    when: nsqd_conf_file.stat.exists

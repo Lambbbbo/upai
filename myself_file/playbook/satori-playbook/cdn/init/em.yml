@@ -1,0 +1,33 @@
+#note: em安装
+#danger: 6
+
+- name: create workdir
+  file: path=/tmp/em state=directory
+
+- name: get em package
+  get_url: url=http://ahern-file.b0.upaiyun.com/upyun/em_client.tar.gz dest=/tmp/em
+
+- name: unarchive em package
+  unarchive: 
+    src: /tmp/em/em_client.tar.gz
+    dest: /tmp/em/
+    copy: no
+
+- name: move file 
+  shell: mv /tmp/em/{{ item }}.sh /usr/bin/{{ item }}; chmod 0755 /usr/bin/{{ item }}
+  with_items:
+    - "getconf"
+    - "killall"
+    - "pgrep"
+
+- name: unarchive install package
+  unarchive:
+    src: /tmp/em/em_client_install.tar.gz
+    dest: /tmp/em
+    copy: no
+
+- name: install em 
+  shell: cd /tmp/em/em_client_install; bash install.sh &> /dev/null
+
+- name: clear package
+  file: path=/tmp/em state=absent

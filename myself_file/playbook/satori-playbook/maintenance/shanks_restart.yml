@@ -1,0 +1,5 @@
+#note: restart shanks
+#danger: 7
+
+- name: restart shanks
+  shell: /etc/init.d/shanks restart

@@ -1,0 +1,3 @@
+---
+- name: bepo replace
+  command: "/etc/init.d/bepo replace"

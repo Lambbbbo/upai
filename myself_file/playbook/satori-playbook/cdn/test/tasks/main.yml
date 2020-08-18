@@ -1,0 +1,12 @@
+---
+- name: uptime
+  command: "uptime"
+  tags: uptime
+
+- name: uname
+  command: "uname"
+  tags: uname
+
+- name: free
+  command: "free"
+  tags: free

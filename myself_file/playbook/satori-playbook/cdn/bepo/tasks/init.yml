@@ -1,0 +1,5 @@
+---
+- name: init
+  command: "{{ item }}"
+  with_items:
+    - "/usr/local/bepo/bepo init"

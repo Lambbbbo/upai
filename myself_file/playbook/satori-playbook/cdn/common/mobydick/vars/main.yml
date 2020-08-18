@@ -1,0 +1,6 @@
+app_tgz: "{{ project }}-app-{{ app_version }}-{{ app_md5 }}.tar.gz"
+core_tgz: "mobydick-{{ core_version }}-{{ core_md5 }}.tar.gz"
+src_conf_path: "{{ conf_path }}/{{ project }}/nginx"
+dest_conf_path: "{{ main_path }}/nginx"
+
+luarocks_bin: "{{ prefix_path }}/openresty/luajit/bin/luarocks"

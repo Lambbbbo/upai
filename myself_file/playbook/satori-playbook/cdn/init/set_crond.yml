@@ -1,0 +1,41 @@
+#note: 任务计划配置
+#danger: 8
+
+- name: modify crond
+  lineinfile: 
+    dest: /etc/cron.d/upyun 
+    line: '1 1 * * * root (/usr/sbin/tmpwatch -m -af 720 /disk/ssd1/logs/upstats_volume)'
+
+- name: modify upyun cron step 1
+  replace:
+    dest: /etc/cron.d/upyun
+    regexp: '#(.*upyun_cdn_health.sh.*)'
+    replace: '\1'
+
+- name: modify upyun cron step 2
+  replace:
+    dest: /etc/cron.d/upyun
+    regexp: '#(.*log_io.*)'
+    replace: '\1'
+
+- name: modify crontab daily
+  file: "dest=/etc/cron.daily/{{ item }} state=absent"
+  with_items:
+    - cups
+    - makewhatis.cron
+    - mlocate.cron
+    - prelink
+    - rpm
+    - tmpwatch
+
+- name: modify cron hourly
+  file: dest=/etc/cron.hourly/mcelog.cron state=absent
+
+- name: modify cron weekly
+  file: "dest=/etc/cron.weekly/{{ item }} state=absent"
+  with_items:
+    - 99-raid-check
+    - makewhatis.cron
+
+- name: modify cron.d
+  file: dest=/etc/cron.d/sysstat state=absent

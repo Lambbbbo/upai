@@ -1,0 +1,10 @@
+---
+- name: ngx config check
+  command: "{{ item }}"
+  with_items:
+    - "{{ main_path }}/nginx/sbin/nginx -t"
+    - "python {{ main_path }}/util/pre_check.py -r {{ main_path }} -c {{ conf_hash }} -v {{ app_version }}"
+  register: ngx_check
+- name: set ngx_check
+  set_fact:
+     ngx_check: "{{ dict(rc=ngx_check.results[0].rc +  ngx_check.results[1].rc) }}"

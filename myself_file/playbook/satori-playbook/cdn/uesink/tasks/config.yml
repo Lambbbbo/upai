@@ -1,0 +1,13 @@
+---
+- name: create ansible work directory
+  local_action: file path={{ work_path }} state=directory mode=0755
+  run_once: true
+- name: check and create dir
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ dest_conf_path }}/etc"
+- name: update conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+  run_once: true
+- name: copy supervisor
+  copy: src={{ src_conf_path }}/supervisor.d/{{ project }}.ini dest=/etc/supervisord.d/

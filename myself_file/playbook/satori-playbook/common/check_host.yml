@@ -1,0 +1,5 @@
+#note: 机器健康检查
+#danger: 2
+
+- name: check disk
+  check_host: 

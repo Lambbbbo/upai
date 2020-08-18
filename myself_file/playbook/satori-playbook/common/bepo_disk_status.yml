@@ -1,0 +1,5 @@
+#note: 检查bepo磁盘状态
+#danger: 0
+
+- name: check bepo disk status
+  shell: /usr/local/bepo/bc/bin/bearcache status --dev

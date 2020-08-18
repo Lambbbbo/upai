@@ -1,0 +1,147 @@
+### Envirnoment setting
+### Hostname
+HOSTNAME="UPYUN"
+VERSION="mocha-0.3"
+
+### Network setting
+NETWORK={{ ISP_ABBR }}
+LOG_FTP_CTC="183.129.206.167"
+LOG_FTP_CNC="60.12.233.199"
+STATS_SRV_CTC="115.231.100.68"
+STATS_SRV_CNC="121.52.226.229"
+REDIS_MASTER="211.155.84.59:6379 211.155.84.60:6379"
+NRPE_DISK_QUOTA="10#6"
+NRPE_ALLOW_HOSTS="60.191.100.99,122.225.101.165,124.160.114.197,123.157.107.11,192.168.0.0/16"
+{% if ISP_ABBR == "ABROAD" %}
+OVERSEAS=Y
+{% endif %} 
+
+
+###
+CDN_API_BOTH=
+CDN_FTP_BOTH=
+IPV6_SUPPORT=
+{% if inventory_hostname.startswith('MIX') or inventory_hostname.startswith("NTT-CN-HKG") %}
+MIX_MARCO=Y
+DIRECT_TRANSFER=Y
+{% endif %}
+
+### Keepalived used parameters
+LVS_DEV="bond0"
+LVS_MASTER=""
+LVS_PORTS="0"
+LVS_GROUPS="U00"
+LVS_VIP_U00="60.214.102.124,60.214.102.125,60.214.102.126"
+LVS_HOSTS_U00="60.214.102.81,60.214.102.82,60.214.102.83"
+LVS_MASK_U00="25"
+
+### Nginx processes defination
+NGINX_DAEMON=
+NGINX_LOG_DEV="/disk/ssd1"
+NGINX_BAD_SITES="#xxx.xxxxx.com"
+NGINX_BAD_URL="#469069331"
+
+NGINX_DIR="/usr/local/marco/nginx/conf"
+NGINX_CMD="/usr/local/marco/nginx/sbin/nginx"
+NGINX_CONF="/usr/local/marco/nginx/conf/nginx.conf"
+{% for private_ip in PRIVATE_IP %}
+NGINX_UPSTREAM="{{ private_ip }}#1"
+NGINX_UPSTREAM_WEIGHT="{{ private_ip }}#50"
+REDIS_UPSTREAM="{{ private_ip }}#1"
+ZICOGO_UPSTREAM="{{ private_ip }}#1"
+{% endfor %}
+NGINX_UPSTREAM_EXTANSION=""
+{% if inventory_hostname.startswith('MIX') or inventory_hostname.startswith('403') or inventory_hostname.startswith('NTT') or inventory_hostname.startswith('PCW') %}
+VISTA_CACHE1_UPSTREAM="192.168.1.1#50"
+{% endif %}
+# NGINX_API Setting
+NGINX_API_DAEMON=
+NGINX_API_DIR="/usr/local/vivi/nginx/conf"
+NGINX_API_CMD="/usr/local/vivi/nginx/sbin/nginx"
+NGINX_API_CONF="/usr/local/vivi/nginx/conf/nginx.conf"
+NGINX_API_UPSTREAM_PHP="192.168.1.220:9901"
+NGINX_API_UPSTREAM_CTC="183.129.206.168 115.231.100.68 115.231.100.115"
+NGINX_API_UPSTREAM_CNC="121.52.229.71 121.52.226.229 121.52.226.243"
+NGINX_API_PUT_CTC="183.129.206.168 115.231.100.68 115.231.100.115"
+NGINX_API_PUT_CNC="121.52.229.71 121.52.226.229 121.52.226.243"
+# NGINX_405 Setting
+NGINX_405_DAEMON=
+NGINX_405_DIR="/usr/local/shanks/nginx/conf"
+NGINX_405_CMD="/usr/local/shanks/nginx/sbin/nginx"
+NGINX_405_CONF="/usr/local/shanks/nginx/conf/nginx.conf"
+NGINX_405_IMG_UPSTREAM="192.168.168.144:3130 192.168.168.145:3130"
+NGINX_405_WATERMARK_UPSTREAM="115.231.100.69:403"
+NGINX_405_SRC_UPSTREAM="60.191.101.226:403 115.231.100.69:403 183.129.206.189:403"
+NGINX_405_PXY_UPSTREAM="CUN#192.168.168.144:404@192.168.168.145:404"
+# NGINX_4XX Setting
+NGINX_4XX_DIR="/usr/local/vista/nginx/conf"
+NGINX_4XX_CMD="/usr/local/vista/nginx/sbin/nginx"
+NGINX_4XX_CONF="/usr/local/vista/nginx/conf/nginx.conf"
+NGINX_4XX_UPSTREAM="192.168.0.85#1"
+
+NGINX_DIR_HUB="/usr/local/ngx_hub_proxy/conf"
+NGINX_CMD_HUB="/usr/local/ngx_hub_proxy/sbin/nginx"
+NGINX_CONF_HUB="/usr/local/ngx_hub_proxy/conf/nginx.conf"
+NGINX_UPSTREAM_HUB="192.168.1.200:7071#1 192.168.1.201:7071#1 192.168.1.202:7071#1 192.168.1.203:7071#1 192.168.1.204:7071#1"
+
+### Hub index server
+HUB_RING_SIZE=512
+HUB_DIR="/usr/local/hub"
+HUB_APP_CONF=$HUB_DIR/etc/app.config
+HUB_VM_CONF=$HUB_DIR/etc/vm.args
+NGINX_UPSTREAM_KUZAN="192.168.11.11 192.168.11.12 192.168.11.13 192.168.11.14 192.168.11.15 192.168.11.16 192.168.11.17 192.168.11.18 192.168.11.19 192.168.11.20 192.168.11.21 192.168.11.22 192.168.11.23 192.168.11.24 192.168.11.25 192.168.11.26 192.168.11.27 192.168.11.28 192.168.11.29 192.168.11.30"
+
+NGINX_DIR_STORE="/usr/local/ngx_store_proxy/conf"
+NGINX_CMD_STORE="/usr/local/ngx_store_proxy/sbin/nginx"
+NGINX_CONF_STORE="/usr/local/ngx_store_proxy/conf/nginx.conf"
+NGINX_UPSTREAM_STORE="192.168.1.140:8080#1 192.168.1.142:8080#1 192.168.1.144:8080#1 192.168.1.146:8080#1 192.168.1.148:8080#1 192.168.1.150:8080#1 192.168.1.152:8080#1 192.168.1.154:8080#1 192.168.1.156:8080#1 192.168.1.158:8080#1 192.168.1.160:8080#1 192.168.1.162:8080#1 192.168.1.180:8080#1 192.168.1.182:8080#1 192.168.1.184:8080#1 192.168.1.186:8080#1 192.168.1.190:8080#1 192.168.1.192:8080#1 192.168.1.194:8080#1 192.168.1.196:8080#1 192.168.1.198:8080#1"
+
+NGINX_DIR_FFMPEG="/usr/local/ngx_ffmpeg/conf"
+NGINX_CMD_FFMPEG="/usr/local/ngx_ffmpeg/sbin/nginx"
+NGINX_CONF_FFMPEG="/usr/local/ngx_ffmpeg/conf/nginx.conf"
+NGINX_UPSTREAM_FFMPEG="192.168.11.31:3300#12 192.168.11.32:3300#12 192.168.11.33:3300#12 192.168.11.34:3300#12 192.168.11.35:3300#12 192.168.11.36:3300#12 192.168.11.37:3300#12 192.168.11.38:3300#12 192.168.11.39:3300#12"
+
+NGINX_DIR_IMG="/usr/local/ngx_img_proxy/conf"
+NGINX_CMD_IMG="/usr/local/ngx_img_proxy/sbin/nginx"
+NGINX_CONF_IMG="/usr/local/ngx_img_proxy/conf/nginx.conf"
+NGINX_UPSTREAM_IMG="192.168.11.11:6501#12 192.168.11.12:6501#12 192.168.11.13:6501#12 192.168.11.14:6501#12 192.168.11.15:6501#12 192.168.11.16:6501#12 192.168.11.17:6501#12 192.168.11.18:6501#12 192.168.11.19:6501#12 192.168.11.20:6501#12 192.168.11.21:6501#12 192.168.11.22:6501#12 192.168.11.23:6501#12 192.168.11.24:6501#12 192.168.11.25:6501#12 192.168.11.26:6501#12 192.168.11.27:6501#12 192.168.11.28:6501#12 192.168.11.29:6501#12 192.168.11.30:6501#12 192.168.11.42:6501#12 192.168.11.43:6501#12 192.168.11.44:6501#12 192.168.11.45:6501#12 192.168.11.46:6501#12"
+
+### Keepalived setting
+KEEPALIVED_LOG="/tmp/keepalived.log"
+KEEPALIVED_DIR="/usr/local/keepalived"
+KEEPALIVED_CONF="$KEEPALIVED_DIR/etc/keepalived.conf"
+KEEPALIVED_EXEC="$KEEPALIVED_DIR/sbin/keepalived"
+KEEPALIVED_OPTIONS="-D"
+KEEPALIVED_API_DIR="/usr/local/keepalived_api"
+KEEPALIVED_API_CONF="$KEEPALIVED_API_DIR/etc/keepalived.conf"
+KEEPALIVED_API_EXEC="$KEEPALIVED_API_DIR/sbin/keepalived"
+KEEPALIVED_API_LOG="/tmp/keepalived_api.log"
+
+### Need running services
+SERVICES="crond network sshd rsyslog local" 
+
+### Time Zone 
+ZONE="Asia/Shanghai"
+
+### Time server
+TIME_SRV="211.115.194.21 0.cn.pool.ntp.org 192.168.1.7 133.100.11.8 0.asia.pool.ntp.org 142.3.100.15 192.168.1.10"
+
+### SSHD service port
+SSHD_PORT="65422"
+
+### Redis master setting
+REDIS_CMD="/usr/local/ngx_redis/bin/redis-server"
+REDIS_CONF_FILE="/usr/local/ngx_redis/redis.conf"
+
+IMAGE_SERVER_CMD="/usr/local/nami/nami"
+
+### Nrpe setting
+NRPE_CMD="/usr/local/nagios/bin/nrpe"
+NRPE_CONF="/usr/local/nagios/etc/nrpe.cfg"
+
+SNMP_CMD="/usr/local/snmp/sbin/snmpd"
+SNMP_CONF="/usr/local/snmp/snmpd.conf"
+SNMP_SRV="pb2TEaVr0j#60.191.100.99@115.238.54.166@124.160.114.197@122.225.101.165@123.157.107.11@120.199.8.6@192.168.1.120@192.168.0.120"
+
+CACHE_PEER=".#112.82.242.98:406@112.82.242.125:406@124.160.123.162:406@157.255.17.66:406@119.188.116.2:406@119.188.116.13:406@59.83.197.254:406@112.82.240.130:406"
+

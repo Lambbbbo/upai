@@ -1,0 +1,30 @@
+#note: 加入redis
+#danger: 6
+
+- name: fetch private_ip
+  fetch_var: host={{ _target_host }} cluster={{ cluster }} info=redis action=add
+
+- name: get conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }}
+  run_once: true
+
+- name: template nginx redis.lua
+  template: src={{ conf_path }}/{{ item }} dest={{ prefix_path }}/{{ item }}
+  with_items:
+    - marco/nginx/app/etc/redis.lua
+    - marco/nginx/app/etc/ypredis.lua
+
+- name: reload marco
+  shell: /etc/init.d/marco reload
+
+- name: check if REDIS_UPSTREAM in upyun.cfg
+  shell: grep 'REDIS_UPSTREAM' /etc/upyun.cfg
+  register: result_redis
+
+- name: add REDIS_UPSTREAM line in upyun.cfg
+  shell: sed "/UPSTREAM_WEIGHT=/a REDIS_UPSTREAM=\"{{ STRING }}\"" /etc/upyun.cfg
+  when: result_redis.rc != 0
+
+- name: add host in upyun.cfg upstream
+  shell: sed -r -i -e "/REDIS_UPSTREAM=/{s@(REDIS_UPSTREAM=).*@\1\"{{ STRING }}\"@}" /etc/upyun.cfg
+  when: result_redis.rc == 0

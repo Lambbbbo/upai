@@ -1,0 +1,7 @@
+--- 
+  - name: create neccessary directory
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+      - "{{ log_path }}/consul/data"
+      - "{{ log_path }}/consul"
+      - "{{ dest_conf_path }}/conf"

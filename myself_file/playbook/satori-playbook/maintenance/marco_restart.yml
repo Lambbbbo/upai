@@ -1,0 +1,5 @@
+#note: restart marco
+#danger: 7
+
+- name: restart marco
+  shell: /etc/init.d/marco restart

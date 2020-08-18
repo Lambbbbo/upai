@@ -1,0 +1,38 @@
+---
+- include_tasks: init.yml
+  tags:
+    - init
+    - install
+
+- import_tasks: _main.yml
+  vars:
+    project: "zicot"
+  tags:
+    - zicot
+    - install
+  when: project == "zicot" or project == 'zico'
+
+- import_tasks: _main.yml
+  vars:
+    project: "zicod"
+  tags:
+    - zicod
+    - install
+  when: project == "zicod" or project == 'zico'
+
+- import_tasks: els.yml
+  vars:
+    project: "els"
+  tags:
+    - els
+    - install
+  when: project == "els" or project == 'zico'
+
+- import_tasks: redis.yml
+  vars:
+    project: "redis"
+  tags:
+    - redis
+    - install
+  when: project == "redis" or project == 'zico'
+

@@ -1,0 +1,8 @@
+---
+- name: check and create dir
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ backup_path }}"
+    - /usr/local/sa/sa-agent
+    - "{{ work_path }}"
+    - "{{ log_path }}"

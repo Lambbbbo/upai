@@ -1,0 +1,9 @@
+#note: 开启bbr
+#danger: 8
+
+- name: change sysctl.conf with bbr
+  lineinfile:
+    dest: /etc/sysctl.conf
+    regexp: '^net.ipv4.tcp_congestion_control='
+    line: 'net.ipv4.tcp_congestion_control=bbr'
+  when: ansible_kernel.split('-')[0] == "4.9.0"

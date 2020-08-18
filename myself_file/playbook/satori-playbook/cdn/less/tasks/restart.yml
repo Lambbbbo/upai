@@ -1,0 +1,21 @@
+---
+  - name: restart service when edge
+    supervisorctl: name={{ item }} state=restarted
+    with_items:
+      - less-server
+      - less-server-billing
+      - less-server-sender
+      - less-server-access
+    when: type == 'cdn'
+
+  - name: restart service when origin
+    supervisorctl: name={{ item }} state=restarted
+    with_items:
+      - less-server
+      - less-server-publish
+      - less-server-sender
+    when: type == 'origin'
+
+  - name: start less-server-proxy
+    shell: "/etc/init.d/less-hls start"
+    when: type == "origin"

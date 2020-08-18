@@ -1,0 +1,22 @@
+---
+  - name: fetch app package
+    fetch_pack: "project={{ project }} version={{ version }} dest={{ work_path }} component=app cdn={{ fetch_from_cdn | default(true) }}"
+    register: fetch_result
+  - name: create directory
+    with_items:
+      - "{{ work_path }}/{{ fetch_result.tar |hash('md5') }}"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+  - name: unarchive app package
+    unarchive:
+      src: "{{ work_path }}/{{ fetch_result.tar }}"
+      dest: "{{ work_path }}/{{ fetch_result.tar |hash('md5') }}"
+      remote_src: yes
+  - name: cp logcut
+    command: "cp {{ work_path }}/{{ fetch_result.tar |hash('md5') }}/{{ project }}/logcut {{ main_path }}/logcut"
+  - name: sync roles to dest
+    command: "rsync -r --delete --force {{ work_path }}/{{ fetch_result.tar |hash('md5') }}/{{ project }}/roles/ {{ main_path }}/roles/"
+  - name: sync utils to dest
+    command: "rsync -r --delete --force {{ work_path }}/{{ fetch_result.tar |hash('md5') }}/{{ project }}/utils/ {{ main_path }}/utils/"

@@ -1,0 +1,20 @@
+---
+- name: sync template
+  template: src={{ src_conf_path }}/{{ item }} dest={{ dest_conf_path }}/{{ item }}
+  with_items:
+    - conf/marco/marco.conf
+    - conf/marco/upstream.conf
+    - conf/marco/upyun_http.conf
+    - conf/marco/upyun_https.conf
+    - conf/marco/upyun_status.conf
+    - conf/marco/upyun_api.conf
+    - conf/marco/upyun_stream.conf
+    - conf/marco/api_proxy.conf
+    - conf/marco/less.conf
+
+- name: make marco logs link
+  file:
+    src: /disk/ssd1/logs
+    dest: /usr/local/marco/nginx/logs/logs
+    state: link
+    force: true

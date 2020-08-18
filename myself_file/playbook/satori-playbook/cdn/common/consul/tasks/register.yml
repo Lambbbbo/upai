@@ -1,0 +1,10 @@
+---
+  - name: create ansible work directory
+    local_action: file path={{ work_path }} state=directory mode=0755
+    run_once: true
+  - name: update conf
+    local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+    run_once: true
+  - name: register {{ role }} to consul
+    template: src={{ conf_path }}/{{ role }}/check.json dest=/usr/local/consul/conf/{{ role }}.json
+  - import_tasks: cdn/common/consul/tasks/reload.yml

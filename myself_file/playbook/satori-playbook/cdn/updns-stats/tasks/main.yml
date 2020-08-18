@@ -1,0 +1,36 @@
+---
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+     - init
+     - install
+- include_tasks: init.yml
+  tags:
+     - init
+     - install
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+     - backup
+     - app
+     - config
+- include_tasks: app.yml
+  tags:
+     - app
+     - install
+- include_tasks: config.yml
+  tags:
+     - config
+     - install
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+     - config
+     - install
+     - version
+- include_tasks: clear.yml
+  tags:
+     - clear
+- include_tasks: cdn/common/supervisor/tasks/restart.yml
+  tags:
+     - restart
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+     - rollback

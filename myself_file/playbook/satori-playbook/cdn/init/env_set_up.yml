@@ -1,0 +1,90 @@
+#note: 机器环境配置-up
+#danger: 8
+
+- name: change system-release
+  replace: dest=/etc/system-release regexp='(CENTOS )(rel.*)' replace='UPYUN \2'
+
+- name: config private ip effect
+  shell: ifconfig bond0:0 192.168.{{ ansible_ssh_host.split('.')[2] }}.{{ ansible_ssh_host.split('.')[3] }} netmask 255.255.255.0
+
+- name: template profile
+  template: src=profile.j2 dest=/etc/profile
+
+- name: fetch facts
+  fetch_meta: project=marco
+
+- name: template upyun.cfg
+  template: src=upyun.cfg.j2 dest=/etc/upyun.cfg
+
+- name: check if iommu_off
+  shell: cat /boot/grub/grub.cfg | grep 'intel_iommu' &> /dev/null
+  register: iommu_result
+  failed_when: "'FAILED' in iommu_result.stderr"
+
+- name: add iommu_off to grub
+  replace:
+    dest: /boot/grub/grub.cfg
+    regexp: '(.*KEYTABLE.*)'
+    replace: '\1 "intel_iommu=off"'
+  when: iommu_result.rc == 1
+
+- name: check if U disk exists
+  shell: fdisk -l |grep MB &> /dev/null
+  register: disk_result
+  failed_when: "'FAILED' in disk_result.stderr"
+
+- name: mount U DISK
+  shell: mount `fdisk -l | grep MB | awk -F "[ :]+" '{print $2}'`1 /mnt
+  register: udisk_result
+  failed_when: "'FAILED' in disk_result.stderr"
+  when: disk_result.rc == 0
+
+- name: add iommu_off to U DISK grub
+  replace:
+    dest: /mnt/boot/grub/menu.lst
+    regexp: '(.*KEYTABLE.*)'
+    replace: '\1 intel_iommu=off'
+  when: disk_result.rc == 0 and udisk_result.rc == 0
+
+- name: umount U disk
+  shell: umount /mnt
+  when: disk_result.rc == 0 and udisk_result.rc == 0
+
+- name: modify the console in inittab
+  lineinfile:
+    dest: /etc/inittab
+    regexp: '^id'
+    line: 'id:3:initdefault:'
+
+- name: modify selinux step 1
+  lineinfile:
+    dest: /etc/sysconfig/selinux
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: modify selinux step 2
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: change /dev/null
+  file: dest=/dev/null mode=0666
+
+- name: do soft link libcrypto
+  file: 
+    src: /usr/local/lib64/libcrypto.so.1.0.0 
+    dest: /lib64/libcrypto.so.6
+    state: link
+
+- name: do soft link libssl
+  file: 
+    src: /usr/local/lib64/libssl.so.1.0.0 
+    dest: /lib64/libssl.so.6
+    state: link
+
+- name: clear /root/
+  shell: rm -rf /root/*
+
+- name: ldconfig
+  shell: ldconfig

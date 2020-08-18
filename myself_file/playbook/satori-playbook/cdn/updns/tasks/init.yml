@@ -1,0 +1,7 @@
+---
+- name: make need directory
+  file: path={{ item }} state=directory
+  with_items:
+    - "/disk/ssd1/logs/updns"
+    - "/disk/ssd1/redisdb_updns"
+    - "/disk/ssd1/redisdb_marco"

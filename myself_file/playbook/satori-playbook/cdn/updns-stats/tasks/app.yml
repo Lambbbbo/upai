@@ -1,0 +1,9 @@
+---
+- name: fetch app package
+  fetch_pack: "project=updns version={{ version }} dest={{ work_path }} component=app so={{ so_result.so }} cdn={{ fetch_from_cdn | default(true) }}"
+  register: fetch_result
+- name: unarchive app package
+  unarchive:
+    src: "{{ work_path }}/{{ fetch_result.tar }}"
+    dest: "{{ prefix_path }}"
+    remote_src: yes

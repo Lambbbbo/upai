@@ -1,0 +1,5 @@
+#note: reload shanks
+#danger: 6
+
+- name: reload shanks
+  shell: /etc/init.d/shanks reload

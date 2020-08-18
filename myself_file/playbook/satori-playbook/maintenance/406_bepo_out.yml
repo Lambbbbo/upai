@@ -1,0 +1,12 @@
+#note: MIX踢出bepo
+#danger: 6
+#arg: private_ip
+
+- name: bepo out from node
+  shell: sed -r -i -e "/{{ private_ip }}/s@(server.*[s|buckup]).*@\1 down;@g" /usr/local/vista/nginx/conf/vista/upstream.conf
+
+- name: reload vista 
+  shell: /etc/init.d/vista reload
+
+- name: add # in upyun.cfg
+  shell: sed -r -i -e "/NGINX_UPSTREAM=/{s@#*({{ private_ip }})@#\1@}" /etc/upyun.cfg

@@ -1,0 +1,13 @@
+---
+- name: fetch plugin package
+  fetch_pack: "project={{ project }} version={{ version }} dest={{ work_path }} component=plugin cdn={{ fetch_from_cdn | default(true) }}"
+  register: fetch_result
+
+- name: clear old plugin
+  shell: "[ -d {{ main_path }}/plugin ] && rm -r {{ main_path }}/plugin"
+
+- name: unarchive plugin package
+  unarchive:
+    src: "{{ work_path }}/{{ fetch_result.tar }}"
+    dest: "{{ prefix_path }}"
+    remote_src: yes

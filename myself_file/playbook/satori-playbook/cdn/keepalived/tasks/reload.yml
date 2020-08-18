@@ -1,0 +1,18 @@
+---
+  - name: collect facts
+    fetch_meta: project={{ project }}
+
+  - name: change sub interface for loopback
+    shell: "ifdown lo && ifup lo && {{ init_path }}/tunl start" 
+    when: LVS_MASTER != "Y"
+
+  - name: "reload {{ project }}"
+    command: "{{ init_path }}/{{ project }} reload"
+    when: LVS_MASTER == "Y"
+
+  - name: "clear iptables"
+    command: "iptables -t mangle -F"
+    when: not LVS_FWMARK 
+
+  - name: "clean exprise file"
+    shell: "cd {{ main_path }}/bin && rm change_master.sh change_backup.sh check_vip.sh -f"

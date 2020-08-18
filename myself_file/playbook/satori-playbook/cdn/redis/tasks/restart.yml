@@ -1,0 +1,3 @@
+---
+  - name: restart redis-{{ redis.name }} supervisor service
+    supervisorctl: name=redis-{{ redis.name }} state=restarted

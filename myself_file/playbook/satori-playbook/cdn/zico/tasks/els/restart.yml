@@ -1,0 +1,5 @@
+---
+- name: restart supervisor service
+  supervisorctl: name={{ item }} state=restarted
+  with_items:
+    - "elasticsearch"

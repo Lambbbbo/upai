@@ -1,0 +1,23 @@
+---
+- name: create ansible work directory
+  local_action: file path={{ work_path }} state=directory mode=0755
+  run_once: true
+
+- name: update conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+  run_once: true
+
+- name: copy supervisor.conf
+  template: src={{ src_conf_path }}/supervisor.d/{{ item }} dest={{ supervisor_path }}/{{ item }}
+  with_items:
+    - heka.conf
+
+- name: make need directory
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ main_path }}/plugin"
+
+- name: sync heka template
+  template: src={{ src_conf_path }}/heka/{{ item }} dest={{ main_path }}/plugin/{{ item }}
+  with_items:
+    - updns_decoder.toml

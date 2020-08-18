@@ -1,0 +1,9 @@
+---
+- name: get last version from .version
+  backup: role={{ project }} version={{ version }} conf_hash={{ conf_hash }}
+- name: check backup file
+  stat: path={{ backup_path }}/{{ project }}-{{ backup_version }}.tar.gz
+  register: backup_file
+- name: backup project
+  archive: path={{ main_path }} dest={{ backup_path }}/{{ project }}-{{ backup_version }}.tar.gz
+  when: backup_version and not backup_file.stat.exists

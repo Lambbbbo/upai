@@ -1,0 +1,14 @@
+#note: 时区配置
+#danger: 8
+
+- name: set timezone
+  lineinfile:
+    dest: /etc/sysconfig/clock
+    regexp: '^ZONE='
+    line: 'ZONE="Asia/Shanghai"'
+
+- name: set timezone step 2
+  shell: cp -a /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+- name: sync current time
+  shell: /usr/sbin/ntpdate -u -o3 ntpdate.c.upyun.com 211.115.194.21 0.cn.pool.ntp.org

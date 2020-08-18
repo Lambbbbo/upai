@@ -1,0 +1,5 @@
+app_tgz: "{{ project }}-transfer-{{ app_version }}-{{ app_md5 }}.tar.gz"
+main_path: "/usr/local/{{ project }}/transfer"
+src_conf_path: "{{ conf_path }}/{{ project }}/transfer"
+dest_conf_path: "{{ main_path }}"
+supervisor_path: "/etc/supervisor.d"

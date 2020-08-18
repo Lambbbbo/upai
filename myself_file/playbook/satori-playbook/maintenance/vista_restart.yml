@@ -1,0 +1,5 @@
+#note: restart vista
+#danger: 7
+
+- name: restart vista
+  shell: /etc/init.d/vista restart

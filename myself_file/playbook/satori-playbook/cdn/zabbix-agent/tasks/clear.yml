@@ -1,0 +1,9 @@
+- name: archive old zabbix
+  archive:
+    path: /usr/local/zabbix
+    dest: "{{ backup_path }}/zabbix_agent/zabbix_agent.backup.tgz"
+
+- name: clear old zabbix
+  file:
+    path: /usr/local/zabbix
+    state: absent

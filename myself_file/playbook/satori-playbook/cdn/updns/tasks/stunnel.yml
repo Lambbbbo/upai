@@ -1,0 +1,10 @@
+---
+# stunnel init has been in redis.conf
+# - name: add stunnel supervisor config
+#   template: src={{ src_conf_path }}/supervisor.d/stunnel.conf dest={{ supervisor_path }}/stunnel.conf
+
+- name: template stunnel config
+  template: src={{ src_conf_path }}/stunnel/stunnel.conf dest={{ prefix_path }}/stunnel/etc/stunnel/stunnel.conf
+
+- name: supervisorctl restart stunnel
+  supervisorctl: name=stunnel state=restarted

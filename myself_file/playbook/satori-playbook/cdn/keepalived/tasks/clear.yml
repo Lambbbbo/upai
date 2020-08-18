@@ -1,0 +1,38 @@
+---
+  - name: collect facts
+    fetch_meta: project={{ project }}
+
+  - name: clear old virtual_server
+    lineinfile:
+        dest: "{{ main_path }}/etc/keepalived.conf"
+        state: absent
+        regexp: "fwmark_server.conf"
+    when: LVS_FWMARK and not LVS_FWMARK_ONLY 
+
+  - name: delete fwmark_server.conf
+    file:
+        path: "{{ main_path }}/etc/fwmark_server.conf"
+        state: absent
+    when: LVS_FWMARK and not LVS_FWMARK_ONLY 
+
+  - name: set upyun.cfg LVS_PORTS
+    lineinfile:
+        dest: "/etc/upyun.cfg"
+        state: present
+        regexp: "^LVS_PORTS"
+        line: 'LVS_PORTS="0"'
+    when: LVS_FWMARK and not LVS_FWMARK_ONLY 
+
+  - name: set facts
+    set_fact:
+        LVS_PORTS:
+          - "0"
+    when: LVS_FWMARK and not LVS_FWMARK_ONLY 
+
+  - name: modify by template
+    template: src={{ src_conf_path }}/{{ item }} dest={{ main_path }}/{{ item }}
+    with_items:
+       - etc/virtual_server.conf
+    when: LVS_FWMARK and not LVS_FWMARK_ONLY 
+
+

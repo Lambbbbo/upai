@@ -1,0 +1,13 @@
+---
+  - name: start service when origin
+    supervisorctl: name={{ item }} state=restarted
+    with_items:
+      - consul
+    when: type == "origin"
+
+  - name: start service when edge
+    supervisorctl: name={{ item }} state=restarted
+    with_items:
+      - consul
+      - consul-replicate
+    when: type == "cdn"

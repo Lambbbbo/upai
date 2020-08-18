@@ -1,0 +1,7 @@
+---
+  - name: check nginx old pid file
+    stat: path=/var/run/{{ project }}.pid.oldbin
+    register: oldpid_file
+  - name: kill old process
+    shell: "kill -QUIT `cat /var/run/{{ project }}.pid.oldbin`"
+    when: oldpid_file.stat.exists

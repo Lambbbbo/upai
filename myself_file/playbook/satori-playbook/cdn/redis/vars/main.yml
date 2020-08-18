@@ -1,0 +1,32 @@
+app_tgz: "{{ project }}-{{ app_version }}-{{ app_md5 }}.tar.gz"
+src_conf_path: "{{ conf_path }}/{{ project }}"
+dest_conf_path: "{{ main_path }}"
+supervisor_path: "/etc/supervisor.d"
+supervisor_log_path: "/disk/ssd1/logs/supervisor"
+redis_rdb_path: "/disk/ssd1/redisdb/rdb"
+
+marco:
+  name: marco
+  port: 1020
+  master_host: 127.0.0.1
+  master_port: 11020
+shanks:
+  name: shanks
+  port: 1021
+  master_host: 127.0.0.1
+  master_port: 11021
+yupoo:
+  name: yupoo
+  port: 1022
+  master_host: 127.0.0.1
+  master_port: 11022
+updns:
+  name: updns
+  port: 1023
+  master_host: 127.0.0.1
+  master_port: 11023
+zicogo:
+  name: zicogo
+  port: 1003
+  master_host: 127.0.0.1
+  master_port: 1003

@@ -1,0 +1,93 @@
+---
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+    - init
+    - install
+
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+    - backup
+    - app
+    - config
+
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+    - app
+    - install
+
+- include_tasks: pre-config.yml 
+  tags:
+    - marco
+    - updns
+    - shanks
+    - yupoo
+    - shanks
+    - zicogo
+    - config
+    - install
+
+- include_tasks: config.yml redis={{ marco }}
+  tags:
+    - marco
+    - updns
+    - config
+    - install
+  when: type in ["cdn", "406", "updns", "marco"]
+    
+- include_tasks: config.yml redis={{ updns }}
+  tags:
+    - updns
+    - config
+    - install
+  when: type in ["updns"]
+
+- include_tasks: config.yml redis={{ shanks }}
+  tags:
+    - shanks
+    - config
+    - install
+  when: type in ["406", "shanks"]
+
+- include_tasks: config.yml redis={{ yupoo }}
+  tags:
+    - yupoo
+    - config
+    - install
+  when: type in ["cdn", "406", "yupoo"]
+
+- include_tasks: config.yml redis={{ zicogo }}
+  tags:
+    - zicogo
+    - config
+    - install
+  when: type in ["cdn", "406", "zicogo"]
+
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+    - config
+    - install
+    - version
+
+- include_tasks: restart.yml redis={{ marco }}
+  tags:
+     - marco.restart
+
+- include_tasks: restart.yml redis={{ updns }}
+  tags:
+     - updns.restart
+
+- include_tasks: restart.yml redis={{ shanks }}
+  tags:
+     - shanks.restart
+
+- include_tasks: restart.yml redis={{ yupoo }}
+  tags:
+     - yupoo.restart
+
+- include_tasks: restart.yml redis={{ zicogo }}
+  tags:
+     - zicogo.restart
+
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+    - rollback

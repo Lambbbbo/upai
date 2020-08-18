@@ -1,0 +1,21 @@
+#note: tmp目录配置
+#danger: 7
+
+- name: mkdir /disk/ssd1/tmp
+  file:
+    dest: /disk/ssd1/tmp
+    state: directory
+    mode: 1777
+    owner: nobody
+    group: nobody
+
+- name: remove /tmp
+  file:
+    dest: /tmp
+    state: absent
+
+- name: make tmp link
+  file:
+    src: /disk/ssd1/tmp
+    dest: /tmp
+    state: link

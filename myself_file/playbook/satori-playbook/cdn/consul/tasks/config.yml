@@ -1,0 +1,40 @@
+---
+  - name: create ansible work directory
+    local_action: file path={{ work_path }} state=directory mode=0755
+    run_once: true
+
+  - name: get conf from conf_center
+    local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+    run_once: true
+
+  - name: get remote conf
+    remote_generate: types={{ type }}
+
+  - name: get local conf
+    local_action: local_generate groups={{ group_names }}  lists={{ inventory_file }} addr={{ PRIVATE_IP[0] }}
+
+  - name: copy main conf when edge
+    template: src={{ src_conf_path }}/conf/{{ item }} dest={{ dest_conf_path }}/conf/{{ item }}
+    with_items:
+      - consul.json
+      - consul_replicate.hcl
+    when: type == "cdn"
+
+  - name: copy supervisor conf when edge
+    template: src={{ src_conf_path }}/supervisor.d/{{ item }}.conf dest={{ supervisor_path }}/
+    with_items:
+      - consul
+      - consul_replicate
+    when: type == "cdn"
+
+  - name: copy main conf when origin
+    template: src={{ src_conf_path }}/conf/{{ item }} dest={{ dest_conf_path }}/conf/{{ item }}
+    with_items:
+      - consul.json
+    when: type == "origin"
+
+  - name: copy supervisor conf when origin
+    template: src={{ src_conf_path }}/supervisor.d/{{ item }}.conf dest={{ supervisor_path }}/
+    with_items:
+      - consul
+    when: type == "origin"  

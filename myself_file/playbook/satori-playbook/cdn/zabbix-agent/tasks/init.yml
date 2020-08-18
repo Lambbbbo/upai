@@ -1,0 +1,8 @@
+---
+  - name: create neccessary directory
+    file: path={{ item }} state=directory mode=0755 owner=nobody
+    with_items:
+        - "{{ log_path }}/zabbix_agent"
+        - "{{ backup_path }}/zabbix_agent"
+        - "{{ dest_conf_path }}/etc"
+

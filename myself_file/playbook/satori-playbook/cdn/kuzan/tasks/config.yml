@@ -1,0 +1,5 @@
+---
+- name: sync template
+  template: src={{ src_conf_path }}/{{ item }} dest={{ dest_conf_path }}/{{ item }}
+  with_items:
+    - conf/kuzan/kuzan_cache.conf

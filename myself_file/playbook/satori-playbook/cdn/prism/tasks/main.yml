@@ -1,0 +1,32 @@
+---
+- include_vars: cdn/common/supervisor/vars/main.yml
+  tags:
+     - always
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+     - init
+     - install
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+     - backup
+     - app
+- include_tasks: init.yml
+  tags:
+    - init
+    - install
+- include_tasks: app.yml
+  tags:
+    - app
+    - install
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+    - app
+    - install
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+    - app
+    - install
+    - version
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+    - rollback

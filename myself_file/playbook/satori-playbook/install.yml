@@ -1,0 +1,12 @@
+# note: CDN 服务安装
+# danger: 6
+# type: cdn_release
+# arg: role, select: $release.role
+# arg: tags, type: list, default: ["install"], changeable: false
+# arg: version, select: $release, depend: role
+---
+- hosts: "{{ node }}"
+  roles:
+    - "cdn/{{ role }}"
+  environment:
+    PATH: /usr/local/bin:{{ ansible_env.PATH }}

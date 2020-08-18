@@ -1,0 +1,8 @@
+---
+   - name: fetch config package
+     fetch_pack: "project={{ project }} tar={{ conf_tgz }} dest={{ work_path }} cdn={{ fetch_from_cdn | default(true) }}"
+   - name: unarchive config package
+     unarchive:
+       src: "{{ work_path }}/{{ conf_tgz }}"
+       dest: "{{ prefix_path }}"
+       remote_src: yes

@@ -1,0 +1,3 @@
+---
+  - name: ngx check after reload
+    check: role={{ role }} app_version={{ app_version }} conf_hash={{ conf_hash }}

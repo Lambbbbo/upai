@@ -1,0 +1,6 @@
+{% if inventory_hostname.split('-')[0] in ['NTT','GTT','PCW','SGT'] %}
+nameserver 8.8.8.8
+{% else %}
+nameserver 119.29.29.29
+nameserver 1.2.4.8
+{% endif %}

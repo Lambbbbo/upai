@@ -1,0 +1,5 @@
+#note: reload marco
+#danger: 6
+
+- name: reload marco
+  shell: /etc/init.d/marco reload

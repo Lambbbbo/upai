@@ -1,0 +1,13 @@
+---
+  - name: check and create dir
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+        - "{{ backup_path }}"
+        - "{{ supervisor_path }}"
+        - "{{ supervisor_log_path }}"
+  - name: sync supervisord.conf
+    template: src=cdn/{{ project }}/templates/supervisord.conf dest=/etc/ mode=0755
+  - name: sync supervisord start script
+    template: src=cdn/{{ project }}/templates/supervisord dest={{ init_path }}/ mode=0755
+  - name: add boot startup to rc.local
+    shell: "grep {{ init_path }}/supervisord /etc/rc.d/rc.local || echo '{{ init_path }}/supervisord start' >>/etc/rc.d/rc.local"

@@ -1,0 +1,51 @@
+- include_vars: cdn/common/supervisor/vars/main.yml
+  tags:
+    - always
+
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+    - install 
+    - init
+
+- include_tasks: init.yml
+  tags:
+    - install
+    - init
+
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+    - backup
+    - app
+    - config
+
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+    - install
+    - app
+
+- name: collect facts
+  fetch_meta: project={{ project }}
+  tags:
+     - config
+     - install
+
+- include_tasks: cdn/common/supervisor/tasks/config.yml
+  tags:
+    - install
+    - config
+
+- include_tasks: config.yml
+  tags:
+    - install
+    - config
+
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+    - app
+    - install
+    - version
+    - config
+
+- include_tasks: cdn/common/supervisor/tasks/restart.yml
+  tags:
+    - restart

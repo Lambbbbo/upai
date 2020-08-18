@@ -1,0 +1,8 @@
+---
+- name: collect facts
+  fetch_meta: project={{ project }}
+
+- name: sync template
+  template: src={{ src_conf_path }}/etc/{{ item }} dest={{ dest_conf_path }}/etc/{{ item }}
+  with_items:
+    - stats.yml

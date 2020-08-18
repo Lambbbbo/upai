@@ -1,0 +1,29 @@
+#note: 加入zicogo
+#danger: 6
+
+- name: fetch private_ip
+  fetch_var: host={{ _target_host }} cluster={{ cluster }} info=zicogo action=add
+
+- name: get conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }}
+  run_once: true
+
+- name: template nginx zicogo.lua
+  template: src={{ conf_path }}/{{ item }} dest={{ prefix_path }}/{{ item }
+  with_items:
+    - marco/nginx/app/etc/zicogo.lua
+
+- name: reload marco
+  shell: /etc/init.d/marco reload
+
+- name: check if ZICOGO_UPSTREAM in upyun.cfg
+  shell: grep 'ZICOGO_UPSTREAM' /etc/upyun.cfg
+  register: result_zicogo
+
+- name: add ZICOGO_UPSTREAM line in upyun.cfg
+  shell: sed "/UPSTREAM_WEIGHT=/a ZICOGO_UPSTREAM=\"{{ STRING }}\"" /etc/upyun.cfg
+  when: result_zicogo.rc != 0
+
+- name: add host in upyun.cfg upstream
+  shell: sed -r -i -e "/ZICOGO_UPSTREAM=/{s@(ZICOGO_UPSTREAM=).*@\1\"{{ STRING }}\"@}" /etc/upyun.cfg
+  when: result_zicogo.rc == 0

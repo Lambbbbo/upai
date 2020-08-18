@@ -1,0 +1,5 @@
+---
+  - name: sync redis supervisor template
+    template: src={{ conf_path }}/{{ project }}/supervisor.d/{{ item }} dest=/etc/supervisor.d/{{ item }} mode=0644
+    with_items:
+      - redis-zicogo.conf

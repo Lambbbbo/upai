@@ -1,0 +1,10 @@
+---
+- name: fetch config.lua from remote 
+  fetch:
+    src:  "{{ main_path }}/nginx/app/etc/config.lua"
+    dest: "{{ work_path }}/archer-config.lua"
+    flat: yes
+- name: sync template
+  template:
+    src:  "{{ work_path }}/archer-config.lua"
+    dest: "{{ main_path }}/nginx/app/etc/config.lua"

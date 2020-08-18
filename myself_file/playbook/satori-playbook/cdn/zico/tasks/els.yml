@@ -1,0 +1,38 @@
+---
+- include_tasks: always.yml
+  tags:
+    - always
+
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+    - backup
+    - app
+    - config
+
+- include_tasks: els/app.yml
+  tags:
+    - app
+
+- include_tasks: els/config.yml
+  tags:
+    - config
+
+- name: set facts
+  set_fact:
+    _project: "{{ project }}"
+  tags:
+    - config
+    - version
+
+- include_tasks: cdn/common/tasks/version.yml project=zico/{{ _project }}
+  tags:
+    - config
+    - version
+
+- include_tasks: "{{ project }}/restart.yml"
+  tags:
+    - restart
+
+- include_tasks: rollback.yml
+  tags:
+    - rollback

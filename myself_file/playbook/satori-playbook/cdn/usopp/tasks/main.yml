@@ -1,0 +1,47 @@
+- include_vars: cdn/common/supervisor/vars/main.yml
+  tags:
+    - always
+
+- import_tasks: cdn/common/tasks/init.yml
+  tags:
+    - init
+    - install
+
+- import_tasks: cdn/common/tasks/backup.yml
+  tags:
+    - app
+    - backup
+    - config
+    - update
+
+- import_tasks: cdn/common/tasks/app.yml
+  tags:
+    - app
+    - install
+    - update
+
+- import_tasks: config.yml
+  tags: 
+    - config
+    - install
+
+- import_tasks: ca.yml
+  tags:
+    - install
+    - config
+    - ca
+
+- import_tasks: cdn/common/tasks/version.yml
+  tags:
+    - install
+    - config
+    - update
+    - version
+
+- import_tasks: cdn/common/supervisor/tasks/restart.yml
+  tags:
+    - restart
+
+- import_tasks: cdn/common/tasks/rollback.yml
+  tags:
+    - rollback

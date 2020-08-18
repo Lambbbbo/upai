@@ -1,0 +1,5 @@
+app_tgz: "{{ project }}-edge-{{ app_version }}-{{ app_md5 }}.tar.gz"
+main_path: "/usr/local/{{ project }}/edge"
+src_conf_path: "{{ conf_path }}/{{ project }}/edge"
+dest_conf_path: "{{ main_path }}"
+supervisor_path: "/etc/supervisor.d"

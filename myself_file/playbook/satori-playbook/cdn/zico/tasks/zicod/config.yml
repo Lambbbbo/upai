@@ -1,0 +1,13 @@
+---
+# - name: sync supervisord.conf
+#   template: src={{ src_conf_path }}/supervisor.d/{{ project }}.conf dest={{ supervisor_path }}/
+
+- name: sync zicod config
+  synchronize: src={{ src_conf_path }}/zicod/ dest={{ dest_conf_path }}/zicod/ dest_port={{ ansible_port }} delete=yes
+
+- name: sync zicod template
+  template: src={{ src_conf_path }}/zicod/{{ item }} dest={{ dest_conf_path }}/zicod/{{ item }}
+  with_items:
+    - nginx/app/etc/config.lua
+    - nginx/conf/nginx.conf
+    - nginx/conf/zicod/zicod.conf

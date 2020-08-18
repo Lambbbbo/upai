@@ -1,0 +1,8 @@
+---
+  - name: create neccessary directory
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+        - "/disk/ssd1/logs/open-falcon"
+        - "/disk/ssd1/backup/open-falcon"
+        - "{{ main_path }}/plugin"
+

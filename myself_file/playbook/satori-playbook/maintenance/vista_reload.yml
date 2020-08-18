@@ -1,0 +1,5 @@
+#note: reload vista
+#danger: 6
+
+- name: reload vista
+  shell: /etc/init.d/vista reload

@@ -1,0 +1,59 @@
+---
+- include_tasks: always.yml
+  tags:
+     - always
+
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+    - init
+    - install
+
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+     - backup
+     - app
+     - config
+
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+     - app
+     - install
+
+- include_tasks: config.yml
+  tags:
+     - config
+     - install
+
+- include_tasks: heka.yml
+  tags:
+     - heka
+     - install
+
+- include_tasks: stunnel.yml
+  tags:
+     - stunnel
+     - install
+
+- include_tasks: stats.yml
+  tags:
+     - stats
+     - install
+
+- include_tasks: redis.yml
+  tags:
+     - redis
+     - install
+
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+     - config
+     - install
+     - version
+
+- include_tasks: restart.yml
+  tags:
+     - restart
+
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+     - rollback

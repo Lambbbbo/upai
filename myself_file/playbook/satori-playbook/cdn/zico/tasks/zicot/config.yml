@@ -1,0 +1,14 @@
+---
+- name: sync supervisord.conf
+  template: src={{ src_conf_path }}/supervisor.d/{{ project }}.conf dest={{ supervisor_path }}/
+
+- name: sync zicot config
+  synchronize: src={{ src_conf_path }}/zicot/ dest={{ dest_conf_path }}/zicot/ dest_port=65422 delete=yes
+
+- name: sync zicot template
+  template: src={{ src_conf_path }}/zicot/{{ item }} dest={{ dest_conf_path }}/zicot/{{ item }}
+  with_items:
+      - nsq2redis/config.py
+      - nsq2redis/logging.conf
+      - redis2db/config.py
+      - redis2db/logging.conf

@@ -1,0 +1,24 @@
+#note: sshd配置
+#danger: 8
+
+- name: modify sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: '.*UseDNS.*',line: 'UseDNS no'}
+    - { regexp: '^#TCPKeepAlive.*',line: 'TCPKeepAlive yes'}
+    - { regexp: '^#ClientAliveInterval.*',line: 'ClientAliveInterval 3'}
+    - { regexp: '^#MaxAuthTries.*',line: 'MaxAuthTries 3'}
+
+- name: modify ssh port
+  shell: source /etc/upyun.cfg && sed -r -i "/^Port/s:.*:Port $SSHD_PORT:" /etc/ssh/sshd_config
+
+- name: modify password ssh
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+

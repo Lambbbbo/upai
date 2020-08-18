@@ -1,0 +1,6 @@
+---
+- name: clear updns_stats
+  shell: |
+    rm -rf /usr/local/updns_stats
+    rm -f /etc/supervisor.d/updns_stats.conf
+    supervisorctl update

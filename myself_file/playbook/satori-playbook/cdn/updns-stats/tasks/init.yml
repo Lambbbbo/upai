@@ -1,0 +1,5 @@
+---
+- name: make log path
+  file: path={{ item }} state=directory
+  with_items:
+    - "{{ log_path }}/updns-stats"

@@ -1,0 +1,63 @@
+---
+- include_vars: cdn/bepo/vars/main.yml
+  tags:
+    - always
+- include_tasks: always.yml
+  tags:
+    - always
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+    - install
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+    - backup
+    - app
+    - core
+    - config
+- include_tasks: core.yml
+  tags:
+    - core
+    - install
+- include_tasks: app.yml
+  tags:
+    - app
+    - install
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+    - app
+    - install
+- include_tasks: rebuild.yml
+  tags:
+    - install
+- include_tasks: init.yml
+  tags:
+    - init
+    - install
+- include: storage.yml
+  tags:
+    - storage
+    - install
+- include_tasks: config.yml
+  tags:
+    - config
+    - install
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+    - config
+    - install
+    - version
+- include: reload.yml
+  tags:
+    - reload
+- include: replace.yml
+  tags:
+    - replace
+- include: restart.yml
+  tags:
+    - restart
+- include: update.yml
+  tags:
+    - upgrade
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+    - rollback

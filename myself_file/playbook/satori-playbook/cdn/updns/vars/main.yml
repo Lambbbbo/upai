@@ -1,0 +1,23 @@
+app_tgz: "{{ project }}-{{ app_version }}-{{ app_md5 }}.tar.gz"
+src_conf_path: "{{ conf_path }}/{{ project }}"
+dest_conf_path: "{{ main_path }}"
+supervisor_path: "/etc/supervisor.d"
+supervisor_log_path: "/disk/ssd1/logs/supervisor"
+
+
+redis_list:
+    ctn:
+      - 115.231.97.7
+      - 115.231.97.8
+      - 115.231.97.9
+      - 115.231.97.10
+    cun:
+      - 101.251.144.7
+      - 101.251.144.8
+      - 101.251.144.9
+      - 101.251.144.10
+    cmn:
+      - 112.13.172.103
+      - 112.13.172.104
+      - 112.13.172.105
+      - 112.13.172.106

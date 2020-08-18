@@ -1,0 +1,13 @@
+---
+- name: app init before unarchive
+  shell: |
+      if [ -d /usr/local/bepo/tools ]
+      then
+        rm -r /usr/local/bepo/tools
+      fi
+
+      if [ -f /usr/local/bepo/hash ]
+      then
+        rm /usr/local/bepo/hash
+      fi
+

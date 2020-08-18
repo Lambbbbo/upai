@@ -1,0 +1,24 @@
+#note: EDGE加入bepo
+#danger: 6
+
+- name: fetch private_ip
+  fetch_var: host={{ _target_host }} cluster={{ cluster }} info=upstream action=add
+
+- name: get conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }}
+  run_once: true
+
+- name: template nginx hot.lua
+  template: src={{ conf_path }}/{{ item }} dest={{ prefix_path }}/{{ item }}
+  with_items:
+    - marco/nginx/app/etc/hot.lua
+    - marco/nginx/conf/marco/upstream.conf
+
+- name: reload marco
+  shell: /etc/init.d/marco reload
+
+- name: add host in upyun.cfg upstream
+  shell: sed -r -i -e "/NGINX_UPSTREAM=/{s@(NGINX_UPSTREAM=).*@\1\"{{ STRING }}\"@}" /etc/upyun.cfg
+
+- name: add host in upyun.cfg upstream_weight
+  shell: sed -r -i -e "/NGINX_UPSTREAM_WEIGHT=/{s@(NGINX_UPSTREAM_WEIGHT=).*@\1\"{{ STRING1 }}\"@}" /etc/upyun.cfg

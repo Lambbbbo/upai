@@ -1,0 +1,17 @@
+---
+- name: clear cdn-mirror
+  shell: |
+	if [ -d /usr/local/cdn-mirror ]
+	then
+		rm -r /usr/local/cdn-mirror;
+	fi
+
+	if [ -d /usr/local/cdn-migration ]
+	then
+		rm -r /usr/local/cdn-migration;
+	fi
+
+	if [ -f /disk/ssd1/logs/migration.log ]
+	then
+		rm /disk/ssd1/logs/migration.log;
+	fi

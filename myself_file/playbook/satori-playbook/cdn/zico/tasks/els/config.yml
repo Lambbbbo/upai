@@ -1,0 +1,8 @@
+---
+- name: sync supervisord.conf
+  template: src={{ src_conf_path }}/supervisor.d/elasticsearch.conf dest={{ supervisor_path }}/
+
+- name: sync els.conf
+  template: src={{ src_conf_path }}/els/{{ item }} dest={{ dest_conf_path }}/els/config/{{ item }}
+  with_items:
+      - elasticsearch.yml

@@ -1,0 +1,15 @@
+---
+- include_vars: cdn/common/supervisor/vars/main.yml
+  tags:
+    - always
+- include_tasks: init.yml
+  tags:
+    - init
+    - install
+- include_tasks: app.yml
+  tags:
+    - app
+    - install
+- include_tasks: start.yml
+  tags:
+    - start

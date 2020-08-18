@@ -1,0 +1,27 @@
+---
+- debug: msg={{ project }}
+- name: set facts
+  set_fact:
+    app_version: "{{ zicot.app_version }}"
+    app_md5: "{{ zicot.app_md5 }}"
+  tags:
+    - always
+  when: project == 'zicot'
+
+- name: set facts
+  set_fact:
+    app_version: "{{ zicod.app_version }}"
+    app_md5: "{{ zicod.app_md5 }}"
+  tags:
+    - always
+  when: project == 'zicod'
+
+- name: check and create dir
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ backup_path }}"
+    - "{{ main_path }}"
+    - "{{ work_path }}"
+
+- name: get last version from .version
+  backup: role={{ role }}/{{ project }} version={{ app_version }}-{{ conf_hash }}

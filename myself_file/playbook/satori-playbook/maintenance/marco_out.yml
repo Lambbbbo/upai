@@ -1,0 +1,42 @@
+#note: 加入marco
+#danger: 6
+
+- name: touch test.test
+  file: 
+    path: /usr/local/marco/nginx/html/test.test
+    state: touch
+
+- name: fetch keepalived vars
+  fetch_var: host={{ _target_host }} cluster={{ cluster }} info=keepalived action=del
+
+- name: get conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version=46a365d4
+  run_once: true
+
+- name: template keepalived conf and virtual_server.conf
+  template: src={{ conf_path }}/{{ item }} dest={{ prefix_path }}/{{ item }}
+  with_items:
+     - keepalived/etc/keepalived.conf
+     - keepalived/etc/virtual_server.conf
+  when: FIRST_CONFIG == "Y"
+
+- name: template virtual_server.conf
+  template: src={{ conf_path }}/{{ item }} dest={{ prefix_path }}/{{ item }}
+  with_items:
+    - keepalived/etc/virtual_server.conf
+  when: FIRST_CONFIG != "Y"
+
+- name: reload keepalived
+  shell: /etc/init.d/keepalived reload
+
+- name: change LVS_DEV in upyun.cfg
+  shell: sed -r -i -e "/LVS_DEV=/{s@(LVS_DEV=).*@\1\"{{ LVS_DEV }}\"@}" /etc/upyun.cfg
+
+- name: change LVS_VIP_U00 in upyun.cfg
+  shell: sed -r -i -e "/LVS_VIP_U00=/{s@(LVS_VIP_U00=).*@\1\"{{ LVS_VIP }}\"@}" /etc/upyun.cfg
+
+- name: change LVS_HOSTS_U00 in upyun.cfg
+  shell: sed -r -i -e "/LVS_HOSTS_U00=/{s@(LVS_HOSTS_U00=).*@\1\"{{ LVS_HOSTS }}\"@}" /etc/upyun.cfg
+
+- name: change LVS_MASK_U00 in upyun.cfg
+  shell: sed -r -i -e "/LVS_MASK_U00=/{s@(LVS_MASK_U00=).*@\1\"{{ LVS_MASK }}\"@}" /etc/upyun.cfg

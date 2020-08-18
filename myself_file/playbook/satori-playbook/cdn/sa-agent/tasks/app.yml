@@ -1,0 +1,13 @@
+---
+   - name: fetch app package
+     fetch_pack: "project={{ project }} version={{ version }} dest={{ work_path }} component=app cdn={{ fetch_from_cdn | default(true) }}"
+     register: fetch_result
+   - name: unarchive app package
+     unarchive:
+       src: "{{ work_path }}/{{ fetch_result.tar }}"
+       dest: "{{ prefix_path }}/sa"
+       remote_src: yes
+   - name: copy SA.cert
+     copy: 
+       src: "cdn/{{ project }}/files/SA.cert"
+       dest: "{{ prefix_path }}/sa/"

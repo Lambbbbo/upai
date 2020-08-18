@@ -1,0 +1,32 @@
+---
+- name: update conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+  run_once: true
+
+- name: collect facts
+  fetch_meta: project={{ project }}  mode={{mode| default(None)}}
+
+- name: check and generate machine.bl
+  shell: /etc/init.d/bepo storage machine --node {{type}} --mode {{bepo.mode}}
+
+
+- name: generate config files.
+  template: src={{ src_conf_path }}/{{ item }} dest={{ dest_conf_path }}/bc/etc/{{ item }}
+  with_items:
+      - conf.bl
+
+- name: clean after config
+  shell: |
+    if [ -d /usr/local/bepo/etc ]
+    then
+        rm -r /usr/local/bepo/etc;
+    fi
+
+    ln -sf /usr/local/bepo/bepo /usr/local/bin/bepo
+    rm /usr/local/bepo/bc/etc/*.conf
+
+    if [ -f /usr/local/bepo/bc/etc/hash ]
+    then
+        rm /usr/local/bepo/bc/etc/hash
+    fi
+

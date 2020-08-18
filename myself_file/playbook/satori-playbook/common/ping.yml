@@ -1,0 +1,7 @@
+#note: ping
+#arg: host, type: host, 目标机器ip或域名
+#arg: num, type: int, default: 4, ping次数
+#danger: 0
+
+- name: ping host
+  shell: ping -c "{{ num }}" "{{ host }}"

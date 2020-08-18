@@ -1,0 +1,3 @@
+---
+- name: write current version to .version
+  backup: role={{ project }} version={{ version }} conf_hash={{ conf_hash }} update=true

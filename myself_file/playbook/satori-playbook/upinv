@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from inventory import Eneru
+import argparse
+import json
+import re
+
+class HostInfo(object):
+	def __init__(self):
+		self.eneru = Eneru()
+    
+	def GetHostInfo(self):
+ 		groups = []
+		allhost = self.eneru.gethost(None, "CDN-EDGE")
+		
+		for group in allhost:
+			g = {}
+			group_name = re.search(r"\D{3}\-\D{2,3}\-\w{3,4}",group['hostname']).group()
+			g["g_name"] = group_name
+			g["hostname"] = group['hostname']
+			g["ip"] = group['ssh_host']
+			g["port"] = group['ssh_port']
+			groups.append(g)
+			
+		return groups
+
+	def host(self,name):
+		groups = self.GetHostInfo()
+	    
+		host = {}
+		for i in groups:
+			if i.get('hostname') == name:
+				host = {
+					"ansible_ssh_host":i['ip'],
+					"ansible_ssh_port":i['port']
+					}
+		print json.dumps(host,indent=4)
+
+	def group(self):
+		groups = self.GetHostInfo()
+    	
+		group_meta = dict()
+		x = []
+		for i in groups:
+			x.append(i['g_name'])
+			group_meta[i.get('g_name')] = {}
+			group_meta[i.get('g_name')]["hosts"] = []
+		for k in groups:
+			group_meta[k.get('g_name')]["hosts"].append(k.get('hostname'))
+		x = list(set(x))
+		group_meta["all"] = {"children": x}
+		group_meta["_meta"] = {"hostvars": {}}
+		print json.dumps(group_meta, indent=4)
+		
+	def run(self):
+		args = self._parse_params()
+		if args['list']:
+			self.group()
+		elif args['host']:
+			self.host(args['host'])
+		else:
+			self._parse_params.parser.print_help()
+	
+	def _parse_params(self):
+		parser = argparse.ArgumentParser()
+		parser.add_argument('--list', help='hosts list', action='store_true')
+		parser.add_argument('--host', help='hosts vars')
+		args = vars(parser.parse_args())
+		
+		return args
+
+def main():
+	getHost = HostInfo()
+	getHost.run()
+	
+if __name__ == '__main__':
+	main()

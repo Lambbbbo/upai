@@ -1,0 +1,3 @@
+---
+  - name: mkdir backup directory
+    file: path={{ main_path }}/module_backup state=directory

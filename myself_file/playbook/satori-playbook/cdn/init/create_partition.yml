@@ -1,0 +1,38 @@
+#note: 磁盘分区
+#danger: 9
+
+- name: mkdir /disk/ssd1 and /disk/ssd2
+  file: path={{ item }} state=directory mode=1755 owner=root group=root
+  with_items:
+    - /disk/ssd1
+
+- name: get system disk size
+  shell: fdisk -l {{ ansible_mounts[0]['device'][0:-1] }} | awk -F "[ .]+" 'NR==2{print $3}'
+  register: disksize
+
+- name: check partition 3
+  shell: fdisk -l {{ ansible_mounts[0]['device'][0:-1] }} | grep "{{ ansible_mounts[0]['device'][0:-1] }}3" &> /dev/null
+  register: dev3
+  failed_when: "'FAILED' in dev3.stderr"
+
+- name: check if partition 3 is mounted
+  shell: mount | grep /disk/ssd1 &> /dev/null
+  register: mount_result
+  failed_when: "'FAILED' in mount_result.stderr"
+
+- name: format /disk/ssd1 when size bigger than 1TB
+  shell: mkfs.ext4 -T largefile -L /disk/ssd1 {{ ansible_mounts[0]['device'][0:-1] }}3 > /dev/null
+  when: dev3.rc == 0 and mount_result.rc != 0 and disksize.stdout > 1000
+
+- name: format /disk/ssd1 when size smaller than 1TB
+  shell: mkfs.ext4 -L /disk/ssd1 {{ ansible_mounts[0]['device'][0:-1] }}3 > /dev/null
+  when: dev3.rc == 0 and mount_result.rc != 0 and disksize.stdout < 1000
+  
+- name: mount /dev/ssd1
+  shell: mount -L /disk/ssd1 -o defaults,noatime,nodiratime,barrier=0,discard /disk/ssd1
+  when: dev3.rc == 0 and mount_result.rc != 0
+ 
+- name: mkdir oldlogs
+  file: path={{ item }} state=directory mode=1755 owner=root group=root
+  with_items:
+    - /disk/ssd1/oldlogs

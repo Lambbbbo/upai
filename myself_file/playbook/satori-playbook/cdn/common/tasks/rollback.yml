@@ -1,0 +1,13 @@
+---
+- name: get last version from .version
+  backup: role={{ project }} version={{ version }} conf_hash={{ conf_hash }}
+- name: check backup file
+  stat: path={{ backup_path }}/{{ project }}-{{ backup_version }}.tar.gz
+  register: backup_file
+- fail:
+    msg: backup_file {{ backup_version }} is not exists
+  when: not backup_file.stat.exists
+- name: rollback
+  unarchive: src={{ backup_path }}/{{ project }}-{{ backup_version }}.tar.gz dest={{ prefix_path }}/ copy=no
+- name: replace backup_version to current_version
+  backup: role={{ project }} version={{ version }} conf_hash={{ conf_hash }} replace=true

@@ -1,0 +1,8 @@
+src_conf_path: "{{ conf_path }}/{{ project }}"
+dest_conf_path: "{{ main_path }}"
+
+redis_master_list:
+  - rds1.pxy.upyun.com
+  - rds2.pxy.upyun.com
+  - rds3.pxy.upyun.com
+  - rds4.pxy.upyun.com

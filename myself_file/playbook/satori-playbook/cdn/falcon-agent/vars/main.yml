@@ -1,0 +1,10 @@
+---
+project: "falcon-agent"
+app_tgz: "{{ project }}-{{ app_version }}-{{ app_md5 }}.tar.gz"
+plugin_tgz: "{{ project }}-plugin-{{ plugin_version }}-{{ plugin_md5 }}.tar.gz"
+main_path: "/usr/local/{{ project }}"
+src_conf_path: "{{ conf_path }}/{{ project }}"
+dest_conf_path: "{{ main_path }}"
+supervisor_path: "/etc/supervisor.d"
+supervisor_log_path: "/disk/ssd1/logs/supervisor"
+

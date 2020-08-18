@@ -1,0 +1,11 @@
+---
+- name: create html directory
+  file: path={{ dest_conf_path }}/html state=directory
+- name: add monitor file
+  shell: "[ -e {{ dest_conf_path }}/html/test.test ] || echo test >  {{ dest_conf_path }}/html/test.test"
+- name: sync template
+  template: src={{ src_conf_path }}/{{ item }} dest={{ dest_conf_path }}/{{ item }}
+  with_items:
+    - conf/vista/upstream.conf
+    - conf/vista/vista.conf
+    - conf/vista/upyun_proxy.conf

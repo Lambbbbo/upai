@@ -1,0 +1,10 @@
+#note: rc.local配置-up
+#danger: 8
+
+- name: check if intel netcard
+  shell: dmesg |grep -i eth|grep -iq intel
+  register: net_result
+  failed_when: "'FAILED' in net_result.stderr"
+
+- name: modify rc.local file
+  template: src=rc.local_up.j2 dest=/etc/rc.d/rc.local mode=0755

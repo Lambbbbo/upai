@@ -1,0 +1,6 @@
+---
+  - name: add crond
+    lineinfile:
+        dest: "{{ crond_path }}"
+        state: present
+        line: '* * * * * root ({{ main_path }}/prism)'

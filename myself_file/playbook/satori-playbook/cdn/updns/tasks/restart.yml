@@ -1,0 +1,8 @@
+---
+  - name: restart updns services
+    supervisorctl: name={{ item }} state=restarted
+    with_items:
+      - stunnel
+      - redis-marco
+      - redis-updns
+      - updns

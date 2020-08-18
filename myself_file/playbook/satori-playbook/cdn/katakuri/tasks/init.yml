@@ -1,0 +1,5 @@
+---
+  - name: create neccessary directory
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+        - "{{ log_path }}/{{ project }}"

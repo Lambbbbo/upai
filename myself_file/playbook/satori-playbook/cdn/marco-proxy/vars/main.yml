@@ -1,0 +1,7 @@
+project: marco
+main_path: "{{ prefix_path }}/{{ project }}"
+core_version: "{{ app_version | regex_replace('\\.\\d+$', '.0') }}"
+app_tgz: "{{ project }}-app-{{ app_version }}-{{ app_md5 }}.tar.gz"
+core_tgz: "{{ project }}-core-{{ core_version }}-{{ core_md5 }}.tar.gz"
+src_conf_path: "{{ conf_path }}/marco-proxy/nginx"
+dest_conf_path: "{{ main_path }}/nginx"

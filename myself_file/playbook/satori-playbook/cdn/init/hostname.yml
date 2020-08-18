@@ -1,0 +1,11 @@
+#note: 主机名配置
+#danger: 8
+
+- name: change hostname in network file
+  replace: dest=/etc/sysconfig/network regexp='(HOSTNAME=).*' replace='\1{{ inventory_hostname }}'
+
+- name: change hostname in hosts
+  lineinfile: dest=/etc/hosts regexp='^127.0.0.1' line='127.0.0.1               localhost.localdomain localhost {{ inventory_hostname }}'
+
+- name: make hostname effect
+  shell: hostname {{ inventory_hostname }}

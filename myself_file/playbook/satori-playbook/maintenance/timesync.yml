@@ -1,0 +1,6 @@
+#note: timesync
+#arg: ntpserver, type: host, default:ntpdate.c.upyun.com ,时间同步服务器ip或域名
+#danger: 3
+
+- name: time sync
+  shell: /usr/sbin/ntpdate -u -o3 "{{ ntpserver }}" 

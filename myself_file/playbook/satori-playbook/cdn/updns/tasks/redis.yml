@@ -1,0 +1,4 @@
+---
+- name: add supervisor config
+  template: src={{ src_conf_path }}/supervisor.d/redis.conf dest={{ supervisor_path }}/redis.conf
+

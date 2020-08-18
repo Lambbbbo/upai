@@ -1,0 +1,42 @@
+#note: 系统优化
+#danger: 8
+
+- name: modify limits.conf delete
+  lineinfile:
+    dest: /etc/security/limits.conf
+    regexp: "{{ item }}"
+    state: absent
+  with_items:
+    - nofile
+    - memlock
+
+- name: modify limits.conf insert
+  lineinfile:
+    dest: /etc/security/limits.conf
+    line: "{{ item }}"
+  with_items:
+    - '* soft nofile 655350'
+    - '* hard nofile 655350'
+    - '#* soft memlock 104857'
+    - '#* hard memlock 104857'
+
+- name: delete lines in blacklist.conf
+  shell: sed -r -i "/{{ item }}/d" /etc/modprobe.d/blacklist.conf
+  with_items:
+    - iptable_nat
+    - nf_nat nf_conntrack
+    - nf_conntrack_ipv4
+    - nf_defrag_ipv4
+
+- name: insert lines in blacklist.conf
+  shell: echo "blacklist {{ item }}" >> /etc/modprobe.d/blacklist.conf
+  with_items:
+    - iptable_nat
+    - nf_nat nf_conntrack
+    - nf_conntrack_ipv4
+    - nf_defrag_ipv4
+
+- name: load kernal parameter
+  shell: sysctl -p > /dev/null 2>&1
+  register: result
+  failed_when: "'FAILED' in result.stderr"

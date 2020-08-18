@@ -1,0 +1,8 @@
+---
+- name: clear old plugin
+  shell: if [ -d "{{ main_path }}/{{ item }}" ]; then rm -r {{ main_path }}/{{ item }}; fi
+  with_items:
+    - "collect"
+    - "monitor"
+    - "utils"
+  ignore_errors: yes

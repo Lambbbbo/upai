@@ -1,0 +1,49 @@
+---
+- name: create ansible work directory
+  local_action: file path={{ work_path }} state=directory mode=0755
+  run_once: true
+
+- name: update conf
+  local_action: git repo={{ conf_repo }} dest={{ conf_path }} version={{ conf_hash | default('master') }}
+  run_once: true
+
+- name: collect facts
+  fetch_meta: project={{ project }}
+
+- name: copy file
+  copy: src={{ item.src }} dest={{ item.dest }} mode=0755
+  with_items:
+    - { "src": "{{ src_conf_path }}/bin/tunl", "dest": "{{ init_path }}/" }
+    - { "src": "{{ src_conf_path }}/bin/misc_check.sh", "dest": "{{ main_path }}/bin/" }
+
+- name: template file
+  template: src={{ item.src }} dest={{ item.dest }} mode=0755
+  with_items:
+    - { "src": "{{ src_conf_path }}/bin/keepalived", "dest": "{{ init_path }}/keepalived" }
+    - { "src": "{{ src_conf_path }}/bin/manage.sh", "dest": "{{ main_path }}/bin/manage.sh" }
+
+- name: modify by template
+  template: src={{ src_conf_path }}/{{ item }} dest={{ main_path }}/{{ item }}
+  with_items:
+     - etc/keepalived.conf
+     - etc/virtual_server.conf
+
+- name: modify fwmark_server
+  template: src={{ src_conf_path }}/{{ item }} dest={{ main_path }}/{{ item }}
+  with_items:
+     - etc/fwmark_server.conf
+  when: LVS_FWMARK and not LVS_FWMARK_ONLY
+
+- name: add tunl startup
+  lineinfile:
+      dest: "/etc/rc.d/rc.local"
+      state: present
+      line: '{{ init_path }}/tunl start'
+  when: not IS_NODE_FIRST
+
+- name: disable tunl startup
+  lineinfile:
+      dest: "/etc/rc.d/rc.local"
+      state: absent
+      line: '{{ init_path }}/tunl'
+  when: IS_NODE_FIRST

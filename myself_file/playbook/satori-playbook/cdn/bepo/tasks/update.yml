@@ -1,0 +1,3 @@
+---
+- name: bepo update
+  command: "/etc/init.d/bepo update"

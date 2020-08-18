@@ -1,0 +1,5 @@
+---
+- name: check and create dir
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - "{{ log_path }}/zicogo"

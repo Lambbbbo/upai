@@ -1,0 +1,3 @@
+---
+- name: reload zicod
+  command: "systemctl reload zicod "

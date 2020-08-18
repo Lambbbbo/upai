@@ -1,0 +1,8 @@
+#note: 下载upsoft及解压
+#danger: 8
+
+- name: get upsoft
+  shell: wget -O /root/upsoft_cdn.tgz http://devops.upyun.com/upsoft_cdn.tgz
+
+- name: unarchive upsoft
+  shell: tar zxf /root/upsoft_cdn.tgz -C /

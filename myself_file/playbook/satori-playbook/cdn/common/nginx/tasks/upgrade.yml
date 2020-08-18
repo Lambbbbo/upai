@@ -1,0 +1,10 @@
+---
+  - name: check nginx old pid file
+    stat: path=/var/run/{{ project }}.pid.oldbin
+    register: oldpid_file
+  - name: kill old process
+    shell: "kill -QUIT `cat /var/run/{{ project }}.pid.oldbin`"
+    when: oldpid_file.stat.exists
+  - name: ngx hot update
+    shell: "kill -USR2 `cat /var/run/{{ project }}.pid` && sleep 2 && kill -WINCH `cat /var/run/{{ project }}.pid.oldbin`"
+    when: ngx_check.rc == 0 and not oldpid_file.stat.exists

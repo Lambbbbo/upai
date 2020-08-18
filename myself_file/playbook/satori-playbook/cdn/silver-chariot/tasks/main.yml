@@ -1,0 +1,62 @@
+---
+- include_vars: cdn/common/nginx/vars/main.yml
+  tags:
+     - always
+- include_tasks: cdn/common/tasks/init.yml
+  tags:
+     - init
+     - install
+- include_tasks: cdn/common/tasks/backup.yml
+  tags:
+     - backup
+     - app
+     - core
+     - config
+- include_tasks: cdn/common/nginx/tasks/init.yml
+  tags:
+     - init
+     - install
+- include_tasks: cdn/common/nginx/tasks/core.yml
+  tags:
+     - core
+     - install
+- include_tasks: cdn/common/tasks/app.yml
+  tags:
+     - app
+     - install
+- name: collect facts
+  fetch_meta: project=marco
+  tags:
+     - config
+     - install
+- include_tasks: config.yml
+  tags:
+     - config
+     - install
+- include_tasks: cdn/common/tasks/version.yml
+  tags:
+     - config
+     - install
+     - version
+- include_tasks: cdn/common/nginx/tasks/check.yml
+  tags:
+     - check
+     - reload
+     - upgrade
+- include_tasks: cdn/common/nginx/tasks/reload.yml
+  tags:
+     - reload
+- include_tasks: cdn/common/nginx/tasks/upgrade.yml
+  tags:
+     - upgrade
+- include_tasks: cdn/common/nginx/tasks/quit.yml
+  tags:
+     - quit
+- include_tasks: cdn/common/tasks/rollback.yml
+  tags:
+     - rollback
+- include_tasks: cdn/common/nginx/tasks/after_check.yml
+  tags:
+     - reload
+     - upgrade
+     - after_check

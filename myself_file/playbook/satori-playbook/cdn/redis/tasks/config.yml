@@ -1,0 +1,17 @@
+---
+- name: config {{ redis.name }} redis
+  template: src={{ src_conf_path }}/redis-common.conf dest={{ dest_conf_path }}/etc/{{ item }}
+  with_items:
+     - "redis.{{ redis.port }}.conf"
+  when: redis.name == "zicogo"
+
+- name: config {{ redis.name }} redis
+  template: src={{ src_conf_path }}/redis.conf dest={{ dest_conf_path }}/etc/{{ item }}
+  with_items:
+     - "redis.{{ redis.port }}.conf"
+  when: redis.name != "zicogo"
+
+- name: copy redis-{{ redis.name }} supervisor.conf
+  template: src={{ src_conf_path }}/supervisor.d/{{ item }} dest={{ supervisor_path }}//{{ item }}
+  with_items:
+     - "redis-{{ redis.name }}.conf"

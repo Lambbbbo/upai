@@ -1,0 +1,2 @@
+  - name: sync template
+    template: src={{ src_conf_path }}/conf/{{ project }}/upyun_status.conf dest={{ dest_conf_path }}/conf/{{ project }}/upyun_status.conf

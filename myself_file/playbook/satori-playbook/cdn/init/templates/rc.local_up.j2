@@ -1,0 +1,40 @@
+#!/bin/sh
+ifenslave bond0 eth0 eth1 eth2 eth3 eth4 eth5
+ifconfig bond0:0 192.168.{{ ansible_ssh_host.split('.')[2] }}.{{ ansible_ssh_host.split('.')[3] }} netmask 255.255.255.0
+/sbin/ip route |while read r; do /sbin/ip route change $r initcwnd 45;done
+
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+mkdir -p /disk/ssd1;mount -L /disk/ssd1 -o defaults,noatime,nodiratime,barrier=0,discard /disk/ssd1
+mkdir -p /disk/ssd2;mount -L /disk/ssd2 -o defaults,noatime,nodiratime,barrier=0,discard /disk/ssd2
+echo "1" > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag
+echo "always" > /sys/kernel/mm/transparent_hugepage/enabled
+echo "never" > /sys/kernel/mm/transparent_hugepage/defrag
+echo "10" > /sys/module/ipmi_si/parameters/kipmid_max_busy_us
+#modprobe ip_conntrack
+#/etc/firewall/firewall start # Own firewall scripts start
+/usr/sbin/ntpdate -u -o3 ntpdate.c.upyun.com 211.115.194.21 0.cn.pool.ntp.org;/usr/sbin/ntpdate -o3 ntpdate.c.upyun.com 211.115.194.21 0.cn.pool.ntp.org;sleep 5
+sysctl -p > /dev/null
+/usr/bin/hunter > /etc/issue
+/usr/bin/hunter > /etc/issue.net
+/usr/bin/hunter > /etc/motd
+{% if net_result.rc == 0 %}
+for i in `ifconfig |grep eth|awk '{print $1}'` ;do
+    ethtool -K $i rx on
+    ethtool -K $i tx on
+    ethtool -K $i sg on
+    ethtool -K $i tso off
+    ethtool -K $i gso off
+    ethtool -K $i gro off
+done
+{% endif %}
+sleep 1
+#start our own services
+sleep 1
+/etc/init.d/supervisord start
+/etc/init.d/named start
+/etc/init.d/tunl start
+/etc/init.d/bepo start
+/etc/init.d/marco start

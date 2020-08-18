@@ -1,0 +1,9 @@
+app_tgz: "{{ project }}-app-{{ app_version }}-{{ app_md5 }}.tar.gz"
+core_tgz: "{{ project }}-core-{{ core_version }}-{{ core_md5 }}.tar.gz"
+src_conf_path: "{{ conf_path }}/{{ project }}"
+dest_conf_path: "{{ main_path }}"
+disk: "NONE"
+# double: close bcache, 8100 and 8200 use ssd and sata
+# bcache: use bcache, just 8100 use ssd
+# ssd: close bcache, just 8100 use ssd
+# sata: close bcache, just 8099 use sata

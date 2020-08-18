@@ -1,0 +1,6 @@
+---
+- hosts: "{{ node }}"
+  environment:
+    PATH: /usr/local/bin:{{ ansible_env.PATH }}
+  tasks:
+    - include_tasks: "{{ target_yml }}"

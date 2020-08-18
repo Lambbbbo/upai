@@ -1,0 +1,9 @@
+---
+  - name: check and create dir
+    file: path={{ item }} state=directory mode=0755
+    with_items:
+        - "{{ backup_path }}"
+  - name: sync {{ project }} start script to remote host
+    template: src=cdn/common/nginx/templates/init.sh dest={{ init_path }}/{{ project }} mode=0755
+  - name: add boot startup to rc.local
+    shell: "grep {{ init_path }}/{{ project }} /etc/rc.d/rc.local || echo '{{ init_path }}/{{ project }} start' >>/etc/rc.d/rc.local"
