@@ -1,0 +1,10 @@
+---
+consul_datacenter: "consul-cdn"
+consul_encrypt: "UMRq7LYhLtANL5rafi5FCw=="
+consul_data_dir: "/disk/ssd1/consul-cdn"
+consul_retry_join: '["192.168.35.32:7301", "192.168.35.33:7301", "192.168.35.34:7301"]'
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["vault"]'

@@ -1,0 +1,9 @@
+---
+zookeeper_data_path: "/disk/sata1/zookeeper/data"
+zookeeper_logs_path: "/disk/sata1/zookeeper/logs"
+zookeeper_client_port: 2181
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["kafka-cdn", "chopper-next", "zk-cdn"]'

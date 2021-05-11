@@ -1,0 +1,4 @@
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["postgres_exporter"]'

@@ -1,0 +1,13 @@
+# -*- mode: nginx -*-
+# vim: set expandtab tabstop=4 shiftwidth=4:
+
+{% if ssl_stream_proxy_enable %}
+server {
+{% for item in ssl_stream_proxy_listen %}
+    listen {{ item }};
+{% endfor %}
+    proxy_pass 103.107.217.130:443;
+    proxy_timeout 35s;
+    proxy_connect_timeout 3s;
+}
+{% endif %}

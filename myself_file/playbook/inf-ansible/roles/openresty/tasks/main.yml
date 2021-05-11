@@ -1,0 +1,10 @@
+---
+- include_tasks: roles/openresty/tasks/always.yml
+  tags:
+     - always
+- include_tasks: roles/openresty/tasks/app.yml
+  tags:
+     - app
+- include_tasks: roles/openresty/tasks/env.yml
+  tags:
+     - env

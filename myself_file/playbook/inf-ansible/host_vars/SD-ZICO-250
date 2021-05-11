@@ -1,0 +1,1 @@
+elasticsearch_data_path: "/disk/sata01/elasticsearch/es_index, /disk/sata02/elasticsearch/es_index, /disk/sata03/elasticsearch/es_index, /disk/sata04/elasticsearch/es_index, /disk/sata05/elasticsearch/es_index, /disk/sata06/elasticsearch/es_index"

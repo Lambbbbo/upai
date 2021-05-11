@@ -1,0 +1,10 @@
+---
+- hosts: BUILD
+  become: yes
+  become_user: root
+  vars_files:
+    - roles/{{ role }}/vars/build.yml
+  tasks:
+    - import_tasks: roles/{{ role }}/tasks/build.yml
+  environment:
+    PATH: /usr/local/bin:{{ ansible_env.PATH }}

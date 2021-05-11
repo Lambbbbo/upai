@@ -1,0 +1,5 @@
+---
+  - name: unarchive app package
+    unarchive:
+      src: "{{ app_tgz }}"
+      dest: "{{ prefix_path }}"

@@ -1,0 +1,24 @@
+---
+- name: create conf and logs directory
+  with_items:
+    - "{{ conf_path }}"
+    - "{{ zookeeper_data_path }}"
+    - "{{ zookeeper_logs_path }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: zookeeper
+    group: zookeeper
+
+- name: sync template
+  template: src=roles/{{ project }}/templates/conf/{{ item }} dest={{ conf_path }}/{{ item }}
+  with_items:
+    - "log4j.properties"
+    - "zoo.cfg"
+
+- name: upload zookeeper myid
+  template: src=roles/{{ project }}/templates/conf/myid dest={{ zookeeper_data_path }}/myid mode=0644
+
+- name: sync supervisor.conf
+  template: src=roles/{{ project }}/templates/supervisor.d/zookeeper.conf dest={{ supervisor_path }}/{{ project }}.conf

@@ -1,0 +1,3 @@
+---
+  - name: reload consul-agent
+    command: "{{ main_path }}/bin/consul reload"

@@ -1,0 +1,5 @@
+src_conf_path: "roles/{{ project }}/templates"
+dest_conf_path: "{{ main_path }}"
+http_conf_path: "{{ main_path }}/conf.http.d"
+stream_conf_path: "{{ main_path }}/conf.stream.d"
+ssl_conf_path: "{{ main_path }}/ssl"

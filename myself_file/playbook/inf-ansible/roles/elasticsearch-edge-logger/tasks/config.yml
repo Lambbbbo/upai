@@ -1,0 +1,31 @@
+---
+- name: create conf and logs directory
+  with_items:
+    - "{{ conf_path }}-{{ elasticsearch_name }}"
+    - "{{ elasticsearch_logs_path }}"
+    - "{{ main_path }}/logs"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: elasticsearch
+    group: elasticsearch
+
+- name: create data directory
+  with_items: "{{ elasticsearch_data_path.split(',') }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: elasticsearch
+    group: elasticsearch
+
+- name: sync template
+  template: src=roles/{{ project }}/templates/config/{{ item }} dest={{ conf_path }}-{{ elasticsearch_name }}/{{ item }}
+  with_items:
+    - "elasticsearch.yml"
+    - "log4j2.properties"
+    - "jvm.options"
+
+- name: sync supervisor.conf
+  template: src=roles/{{ project }}/templates/supervisor.d/elasticsearch.conf dest={{ supervisor_path }}/elasticsearch-{{ elasticsearch_name }}.conf

@@ -1,0 +1,13 @@
+{
+    "service": {
+        "name": "zk-cdn",
+        "port": 2181,
+        "checks": [
+            {
+                "tcp": "{{ ansible_host }}:2181",
+                "interval": "5s",
+                "timeout": "2s"
+            }
+        ]
+    }
+}

@@ -1,0 +1,3 @@
+---
+  - name: restart supervisor service
+    supervisorctl: name={{ role }}-agent state=restarted

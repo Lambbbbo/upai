@@ -1,0 +1,35 @@
+worker_processes ${{NGINX_WORKER_PROCESSES}};
+daemon ${{NGINX_DAEMON}};
+
+pid pids/nginx.pid;
+error_log ${{PROXY_ERROR_LOG}} ${{LOG_LEVEL}};
+
+worker_rlimit_nofile 65535;
+
+events {
+    worker_connections 65500;
+    multi_accept on;
+}
+
+http {
+    gzip on;
+    gzip_min_length 256;
+    gzip_types text/plain text/javascript text/css text/xml text/x-component application/javascript application/x-javascript application/xml application/json application/xhtml+xml application/rss+xml application/atom+xml application/x-font-ttf application/vnd.ms-fontobject image/svg+xml image/x-icon font/opentype;
+    gzip_disable "MSIE [1-6]\.";
+    gzip_vary on;
+    gzip_proxied any;
+
+    proxy_buffer_size          128k;
+    proxy_buffers              4 256k;
+    proxy_busy_buffers_size    256k;
+    proxy_set_header Accept-Encoding '';
+
+    client_body_temp_path /disk/ssd1/client_body_temp 1 2;
+
+    include 'nginx-kong.conf';
+    include 'conf.http.d/*.conf';
+}
+
+stream {
+    include 'conf.stream.d/*.conf';
+}

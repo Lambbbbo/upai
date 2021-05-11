@@ -1,0 +1,14 @@
+{
+    "service": {
+        "name": "es-uplog",
+        "port": 9200,
+        "checks": [
+            {
+                "http": "http://{{ ansible_host }}:9200/_cat/health",
+                "method": "GET",
+                "interval": "5s",
+                "timeout": "1s"
+            }
+        ]
+    }
+}

@@ -1,0 +1,19 @@
+---
+kong_name: "kong-x"
+pg_host: "192.168.147.15"
+pg_user: "kong"
+pg_port: "6432"
+pg_password: "zbsWiho8maUYjvfw"
+pg_database: "kong"
+dns_resolver: "192.168.147.20"
+proxy_listen: "0.0.0.0:80, 0.0.0.0:4000, 122.224.83.159:443 ssl, 124.160.136.159:443 ssl, 112.13.110.159:443 ssl, 0.0.0.0:4443 ssl"
+admin_listen: "{{ ansible_host }}:4001"
+plugins: "bundled"
+sync_costom_conf: True
+with_nsqproxy_conf: True
+with_cdnnsq: True
+ssl_cert: "/usr/local/kong/ssl/.x.upyun.com.crt"
+ssl_cert_key: "/usr/local/kong/ssl/.x.upyun.com.key"
+cluster_name: "kong-x"
+
+ssl_stream_proxy_enable: False

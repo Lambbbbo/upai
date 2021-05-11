@@ -1,0 +1,9 @@
+---
+work_path: "/tmp/ansible"
+prefix_path: "/usr/local"
+
+log_path: "/disk/ssd1/logs"
+init_path: "/etc/init.d"
+
+project: "{{ role }}"
+main_path: "{{ prefix_path }}/{{ project }}"

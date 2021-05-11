@@ -1,0 +1,10 @@
+---
+- name: ensure group exists
+  group:
+    name: elasticsearch
+    state: present
+
+- name: add the user and group
+  user:
+    name: elasticsearch
+    group: elasticsearch

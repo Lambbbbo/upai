@@ -1,0 +1,14 @@
+{
+    "service": {
+        "name": "es-edge-logger",
+        "port": 9201,
+        "checks": [
+            {
+                "http": "http://{{ ansible_host }}:9201/_cat/health",
+                "method": "GET",
+                "interval": "5s",
+                "timeout": "1s"
+            }
+        ]
+    }
+}

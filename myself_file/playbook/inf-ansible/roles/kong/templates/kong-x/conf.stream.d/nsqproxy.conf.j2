@@ -1,0 +1,22 @@
+# -*- mode: nginx -*-
+# vim: set expandtab tabstop=4 shiftwidth=4:
+
+# nsqproxy.x.upyun.com
+
+upstream platform-nsqserver {
+    server 192.168.12.11:4150 weight=5 max_fails=2 fail_timeout=35s;
+    server 192.168.12.12:4150 weight=5 max_fails=2 fail_timeout=35s;
+    server 192.168.12.13:4150 weight=5 max_fails=2 fail_timeout=35s;
+    server 192.168.12.14:4150 weight=5 max_fails=2 fail_timeout=35s;
+}
+
+server {
+    listen 5150 ssl;
+    ssl_certificate ssl/nsqproxy.x.upyun.com.pem;
+    ssl_certificate_key ssl/nsqproxy.x.upyun.com-key.pem;
+    ssl_client_certificate ssl/k8s-ca-bundle.pem;
+    ssl_verify_client on;
+    proxy_pass platform-nsqserver;
+    proxy_timeout 35s;
+    proxy_connect_timeout 35s;
+}

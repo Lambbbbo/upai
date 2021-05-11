@@ -1,0 +1,11 @@
+---
+  - name: unarchive app package
+    unarchive:
+      src: "{{ app_tgz }}"
+      dest: "{{ prefix_path }}"
+
+  - name: link app directory
+    file:
+      src: "{{ main_path }}"
+      dest: "{{ prefix_path }}/kafka"
+      state: link

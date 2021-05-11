@@ -1,0 +1,3 @@
+---
+  - name: restart kong
+    command: "{{ main_path }}/bin/kong restart -p {{ main_path }} -c {{ main_path }}/kong.conf --nginx-conf {{ main_path }}/nginx.conf.template"

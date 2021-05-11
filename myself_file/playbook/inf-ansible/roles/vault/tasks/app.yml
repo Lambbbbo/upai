@@ -1,0 +1,13 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ main_path }}/bin"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: unarchive app package
+    unarchive:
+      src: "{{ app_tgz }}"
+      dest: "{{ prefix_path }}"

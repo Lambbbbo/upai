@@ -1,0 +1,34 @@
+---
+- include_tasks: roles/kong/tasks/init.yml
+  tags:
+     - init
+- include_tasks: roles/kong/tasks/config.yml
+  tags:
+     - config
+- include_tasks: roles/kong/tasks/prepare.yml
+  tags:
+     - prepare
+- include_tasks: roles/kong/tasks/health.yml
+  tags:
+     - health
+- include_tasks: roles/kong/tasks/check.yml
+  tags:
+     - check
+     - start
+     - reload
+     - restart
+- include_tasks: roles/kong/tasks/start.yml
+  tags:
+     - start
+- include_tasks: roles/kong/tasks/quit.yml
+  tags:
+     - quit
+- include_tasks: roles/kong/tasks/stop.yml
+  tags:
+     - stop
+- include_tasks: roles/kong/tasks/reload.yml
+  tags:
+     - reload
+- include_tasks: roles/kong/tasks/restart.yml
+  tags:
+     - restart

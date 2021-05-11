@@ -1,0 +1,44 @@
+# Cluster
+cluster.name: zico
+
+# Node can have abritrary attributes we can use for routing
+node.name: zico-node-{{ ansible_host }}
+#node.datacenter: amsterdam
+
+path.data: {{ elasticsearch_data_path }}
+
+path.logs: {{ elasticsearch_logs_path }}
+
+bootstrap.memory_lock: true
+
+network.host: ["127.0.0.1", "{{ ansible_host }}"]
+http.port: {{ elasticsearch_http_port }}
+transport.tcp.port: {{ elasticsearch_transport_tcp_port }}
+
+# indices fielddata
+indices.fielddata.cache.size: 15%
+indices.requests.cache.size: 15%
+indices.requests.cache.expire: 6h
+
+#Search thread pool
+thread_pool.search.size: 37
+thread_pool.search.queue_size: 10000
+
+# Bulk thread pool#
+thread_pool.bulk.size: 25
+thread_pool.bulk.queue_size: 10000
+
+# Index thread pool
+thread_pool.index.size: 25
+thread_pool.index.queue_size: 10000
+
+# indexing buffer settings
+indices.memory.index_buffer_size: 30%
+indices.memory.min_index_buffer_size: 96mb
+
+# Minimum nodes alive to constitute an operational cluster
+gateway.recover_after_nodes: 5
+discovery.zen.minimum_master_nodes: {{ elasticsearch_minimum_master_nodes }}
+discovery.zen.ping.unicast.hosts: {{ elasticsearch_ping_unicast_hosts }}
+
+action.destructive_requires_name: true

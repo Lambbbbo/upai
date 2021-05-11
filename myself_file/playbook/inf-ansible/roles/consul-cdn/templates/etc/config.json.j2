@@ -1,0 +1,26 @@
+{
+    "bootstrap_expect": 3,
+    "datacenter": "{{ consul_datacenter }}",
+    "data_dir": "{{ consul_data_dir }}",
+    "server": true,
+    "addresses": {
+        "http": "127.0.0.1 {{ ansible_host }}",
+        "dns": "{{ ansible_host }}"
+    },
+    "ui": true,
+    "disable_update_check": true,
+    "node_name": "{{ ansible_host }}",
+    "bind_addr": "{{ ansible_host }}",
+    "log_level": "INFO",
+    "encrypt": "{{ consul_encrypt }}",
+    "rejoin_after_leave": true,
+    "retry_join": {{ consul_retry_join }},
+    "ports": {
+        "dns": 7600,
+        "http": 7500,
+        "https": -1,
+        "serf_lan": 7301,
+        "serf_wan": -1,
+        "server": 7300
+    }
+}

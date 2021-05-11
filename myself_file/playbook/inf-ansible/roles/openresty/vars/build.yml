@@ -1,0 +1,43 @@
+openresty_ver: "1.13.6.2"
+openresty_mirror: https://openresty.org/download
+openresty_checksum: sha256:946e1958273032db43833982e2cec0766154a9b5cb8e67868944113208ff2942
+
+openresty_name: "openresty-{{ openresty_ver }}"
+openresty_tgz: "{{ openresty_name }}.tar.gz"
+openresty_url: "{{ openresty_mirror }}/{{ openresty_tgz }}"
+
+openresty_cleanup: True
+
+openssl_ver: "1.0.2k"
+openssl_patch_ver: "1.0.2h"
+openssl_name: "openssl-{{ openssl_ver }}"
+openssl_tgz: "{{ openssl_name }}.tar.gz"
+
+pcre_ver: "8.40"
+pcre_name: "pcre-{{ pcre_ver }}"
+pcre_tgz: "{{ pcre_name }}.tar.gz"
+
+luajit_ver: "2.1"
+luajit_dir: "{{ main_path }}/luajit"
+luajit_include_dir: "{{ luajit_dir }}/include/luajit-{{ luajit_ver }}"
+
+luarocks_enable: True
+
+luarocks_ver: "3.0.4"
+luarocks_prefix: "{{ luajit_dir }}"
+luarocks_mirror: "http://luarocks.github.io/luarocks/releases"
+luarocks_checksum: sha256:1236a307ca5c556c4fed9fdbd35a7e0e80ccf063024becc8c3bf212f37ff0edf
+
+luarocks_name: "luarocks-{{ luarocks_ver }}"
+luarocks_tgz: "{{ luarocks_name }}.tar.gz"
+luarocks_tgz_url: "{{ luarocks_mirror }}/{{ luarocks_tgz }}"
+
+luarocks_install:
+    - { name: "kong", ver: "0.14.0-0" }
+
+deps_mirror: "http://10.0.6.36:8000"
+
+build_src_path: "/usr/src"
+build_pkg_path: "/usr/src"
+
+ansible_python_interpreter: "/usr/bin/python"

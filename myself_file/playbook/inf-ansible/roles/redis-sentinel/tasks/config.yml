@@ -1,0 +1,23 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ conf_path }}"
+      - "{{ redis_dir }}/3001"
+      - "{{ redis_dir }}/3002"
+      - "{{ redis_dir }}/3003"
+      - "{{ redis_dir }}/3004"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: sync template
+    template: src=roles/{{ project }}/templates/etc/sentinel/{{ item }} dest={{ conf_path }}/{{ item }}
+    with_items:
+      - "redis.3001.conf"
+      - "redis.3002.conf"
+      - "redis.3003.conf"
+      - "redis.3004.conf"
+
+  - name: sync supervisor.conf
+    template: src=roles/{{ project }}/templates/supervisor.d/redis-sentinel.conf dest={{ supervisor_path }}/redis-sentinel.conf

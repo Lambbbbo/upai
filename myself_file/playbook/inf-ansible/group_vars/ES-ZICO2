@@ -1,0 +1,13 @@
+---
+elasticsearch_name: "zico"
+elasticsearch_http_port: 9500-9600
+elasticsearch_transport_tcp_port: 9600-9700
+elasticsearch_data_path: "/disk/sata1/elasticsearch-{{ elasticsearch_name }},/disk/sata2/elasticsearch-{{ elasticsearch_name }},/disk/sata3/elasticsearch-{{ elasticsearch_name }},/disk/sata4/elasticsearch-{{ elasticsearch_name }}"
+elasticsearch_logs_path: "/disk/ssd1/logs/elasticsearch-{{ elasticsearch_name }}"
+elasticsearch_ping_unicast_hosts: '["192.168.32.100", "192.168.32.101", "192.168.32.102", "192.168.32.103", "192.168.32.104"]'
+elasticsearch_minimum_master_nodes: 3
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["es-zico2"]'

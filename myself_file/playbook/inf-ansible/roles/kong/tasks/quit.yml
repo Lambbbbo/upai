@@ -1,0 +1,3 @@
+---
+  - name: quit kong
+    command: "{{ main_path }}/bin/kong quit -p {{ main_path }}"

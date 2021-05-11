@@ -1,0 +1,19 @@
+---
+kong_name: "kong-s"
+pg_host: "192.168.147.15"
+pg_user: "kong2"
+pg_port: "6432"
+pg_password: "dZVADH8BPoJFJThk"
+pg_database: "kong2"
+dns_resolver: "192.168.147.20"
+proxy_listen: "127.0.0.1:8080"
+admin_listen: "{{ ansible_host }}:4001"
+plugins: "bundled, forwarded-user-auth"
+sync_costom_conf: True
+with_nsqproxy_conf: False
+ssl_cert: "/usr/local/kong/ssl/.s.upyun.com.crt"
+ssl_cert_key: "/usr/local/kong/ssl/.s.upyun.com.key"
+cluster_name: "kong-s"
+
+ssl_stream_proxy_enable: False
+with_cdnnsq: False

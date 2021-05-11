@@ -1,0 +1,4 @@
+prefix_path: "/opt"
+main_path: "{{ prefix_path }}/jdk1.8.0_181"
+
+app_tgz: "roles/{{ project }}/files/jdk-8u181-linux-x64.tar.gz"

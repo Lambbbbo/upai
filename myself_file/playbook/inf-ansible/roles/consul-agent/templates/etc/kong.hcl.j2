@@ -1,0 +1,13 @@
+{
+    "service": {
+        "name": "kong",
+        "port": 80,
+        "checks": [
+            {
+                "tcp": "{{ ansible_host }}:80",
+                "interval": "5s",
+                "timeout": "2s"
+            }
+        ]
+    }
+}

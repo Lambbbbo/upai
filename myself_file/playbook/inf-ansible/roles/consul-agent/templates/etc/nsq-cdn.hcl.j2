@@ -1,0 +1,13 @@
+{
+    "service": {
+        "name": "nsq-cdn",
+        "port": 4150,
+        "checks": [
+            {
+                "tcp": "{{ ansible_host }}:4150",
+                "interval": "5s",
+                "timeout": "2s"
+            }
+        ]
+    }
+}

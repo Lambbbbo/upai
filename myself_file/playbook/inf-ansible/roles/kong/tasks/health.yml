@@ -1,0 +1,3 @@
+---
+  - name: check kong health
+    command: "{{ main_path }}/bin/kong health -p {{ main_path }}"

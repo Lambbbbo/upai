@@ -1,0 +1,24 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ conf_path }}"
+      - "{{ cert_path }}"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: sync template
+    template: src=roles/{{ project }}/templates/etc/{{ item }} dest={{ conf_path }}/{{ item }}
+    with_items:
+      - "nsqadmin.conf"
+      - "nsqd.conf"
+      - "nsqlookupd.conf"
+
+  - name: sync certs
+    synchronize: src=roles/{{ project }}/templates/etc/{{ item }} dest={{ conf_path }}/{{ item }} delete=yes
+    with_items:
+      - "certs"
+
+  - name: sync supervisor.conf
+    template: src=roles/{{ project }}/templates/supervisor.d/nsq.conf dest={{ supervisor_path }}/nsq.conf

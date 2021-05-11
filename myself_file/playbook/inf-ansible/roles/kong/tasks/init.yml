@@ -1,0 +1,5 @@
+---
+  - name: sync {{ project }} start script to remote host
+    template: src={{ src_conf_path }}/init.sh dest={{ init_path }}/{{ project }} mode=0755
+  - name: add boot startup to rc.local
+    shell: "grep {{ init_path }}/{{ project }} /etc/rc.d/rc.local || echo '{{ init_path }}/{{ project }} start' >>/etc/rc.d/rc.local"

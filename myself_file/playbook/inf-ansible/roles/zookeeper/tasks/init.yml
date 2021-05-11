@@ -1,0 +1,10 @@
+---
+- name: ensure group exists
+  group:
+    name: zookeeper
+    state: present
+
+- name: add the user and group
+  user:
+    name: zookeeper
+    group: zookeeper

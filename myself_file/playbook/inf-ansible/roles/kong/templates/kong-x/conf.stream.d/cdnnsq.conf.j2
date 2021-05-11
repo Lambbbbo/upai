@@ -1,0 +1,46 @@
+# -*- mode: nginx -*-
+# vim: set expandtab tabstop=4 shiftwidth=4:
+
+upstream cdnnsqd {
+    server {{ nsq_index }}:4150 weight=5 max_fails=2 fail_timeout=35s;
+}
+
+upstream cdnnsqd1 {
+    server {{ nsq_index }}:4151 weight=5 max_fails=2 fail_timeout=35s;
+}
+
+upstream cdnnsqlkd {
+    server {{ nsq_index }}:4161 weight=5 max_fails=2 fail_timeout=35s;
+}
+
+upstream cdnnsqd2 {
+    server {{ nsq_index }}:4152 weight=5 max_fails=2 fail_timeout=35s;
+}
+
+server {
+    listen 4150;
+    proxy_pass cdnnsqd;
+    proxy_timeout 35s;
+    proxy_connect_timeout 35s;
+}
+
+server {
+    listen 4151;
+    proxy_pass cdnnsqd1;
+    proxy_timeout 35s;
+    proxy_connect_timeout 35s;
+}
+
+server {
+    listen 4152;
+    proxy_pass cdnnsqd2;
+    proxy_timeout 35s;
+    proxy_connect_timeout 35s;
+}
+
+server {
+    listen 4161;
+    proxy_pass cdnnsqlkd;
+    proxy_timeout 35s;
+    proxy_connect_timeout 35s;
+}

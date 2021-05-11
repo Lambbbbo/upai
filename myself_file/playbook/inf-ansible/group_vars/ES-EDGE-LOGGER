@@ -1,0 +1,13 @@
+---
+elasticsearch_name: "edge-logger"
+elasticsearch_http_port: 9201
+elasticsearch_transport_tcp_port: 9301
+elasticsearch_data_path: "/disk/sata5/elasticsearch-{{ elasticsearch_name }},/disk/sata6/elasticsearch-{{ elasticsearch_name }},/disk/sata7/elasticsearch-{{ elasticsearch_name }},/disk/sata8/elasticsearch-{{ elasticsearch_name }},/disk/sata9/elasticsearch-{{ elasticsearch_name }}"
+elasticsearch_logs_path: "/disk/ssd1/logs/elasticsearch-{{ elasticsearch_name }}"
+elasticsearch_ping_unicast_hosts: '["192.168.35.32:9301", "192.168.35.33:9301", "192.168.35.34:9301", "192.168.35.35:9301", "192.168.35.36:9301"]'
+elasticsearch_minimum_master_nodes: 2
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["es-edge-logger"]'

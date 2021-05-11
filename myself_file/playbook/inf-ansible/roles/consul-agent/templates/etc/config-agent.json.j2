@@ -1,0 +1,12 @@
+{
+    "datacenter": "{{ consul_agent_datacenter }}",
+    "data_dir": "{{ consul_agent_data_dir }}",
+    "addresses": {
+        "http": "127.0.0.1"
+    },
+    "disable_update_check": true,
+    "node_name": "{{ ansible_host }}",
+    "bind_addr": "{{ ansible_host }}",
+    "rejoin_after_leave": true,
+    "retry_join": {{ consul_agent_retry_join }}
+}

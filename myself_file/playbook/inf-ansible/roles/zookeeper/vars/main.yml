@@ -1,0 +1,6 @@
+prefix_path: "/opt"
+main_path: "{{ prefix_path }}/zookeeper-3.4.8"
+conf_path: "{{ main_path }}/conf"
+supervisor_path: "/etc/supervisor.d"
+
+app_tgz: "roles/{{ project }}/files/zookeeper-3.4.8.tar.gz"

@@ -1,0 +1,13 @@
+---
+- include_tasks: roles/{{ role }}/tasks/app.yml
+  tags:
+     - app
+- include_tasks: roles/{{ role }}/tasks/config.yml
+  tags:
+     - config
+- include_tasks: roles/{{ role }}/tasks/reload.yml
+  tags:
+     - reload
+- include_tasks: roles/{{ role }}/tasks/restart.yml
+  tags:
+     - restart

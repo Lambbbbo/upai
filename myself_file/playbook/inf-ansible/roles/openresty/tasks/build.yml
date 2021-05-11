@@ -1,0 +1,151 @@
+- name: cleanup
+  when: openresty_cleanup
+  with_items:
+    - "{{ main_path }}"
+    - "{{ build_src_path }}/{{ openresty_tgz }}"
+    - "{{ build_src_path }}/{{ openresty_name }}"
+    - "{{ build_src_path }}/{{ openssl_tgz }}"
+    - "{{ build_src_path }}/{{ openssl_name }}"
+    - "{{ build_src_path }}/{{ pcre_tgz }}"
+    - "{{ build_src_path }}/{{ pcre_name }}"
+    - "{{ build_src_path }}/{{ luarocks_tgz }}"
+    - "{{ build_src_path }}/{{ luarocks_name }}"
+  file:
+    path: "{{ item }}"
+    state: absent
+
+- name: download deps pkg
+  with_items:
+    - "{{ deps_mirror }}/{{ openssl_tgz }}"
+    - "{{ deps_mirror }}/{{ pcre_tgz }}"
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ build_src_path }}/"
+    mode: "0644"
+
+- name: download openresty
+  get_url:
+    url: "{{ openresty_mirror }}/{{ openresty_tgz }}"
+    dest: "{{ build_src_path }}/{{ openresty_tgz }}"
+    mode: "0644"
+    checksum: "{{ openresty_checksum }}"
+
+- name: create build directory
+  with_items:
+    - "{{ build_src_path }}"
+    - "{{ build_pkg_path }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+
+- name: unarchive pkg
+  with_items:
+    - "{{ openresty_name }}"
+    - "{{ openssl_name }}"
+    - "{{ pcre_name }}"
+  unarchive:
+    owner: root
+    group: root
+    remote_src: yes
+    src: "{{ build_src_path }}/{{ item }}.tar.gz"
+    dest: "{{ build_src_path }}"
+    creates: "{{ build_src_path }}/{{ item }}"
+
+- name: apply patch
+  patch:
+    remote_src: yes
+    src: "{{ build_src_path }}/{{ openresty_name }}/patches/openssl-{{ openssl_patch_ver }}-sess_set_get_cb_yield.patch"
+    basedir: "{{ build_src_path }}/{{ openssl_name }}"
+    strip: 1
+
+- name: configure openresty
+  command: >-
+    ./configure
+    --prefix={{ main_path }}
+    --with-ipv6
+    --with-http_realip_module
+    --with-http_ssl_module
+    --with-http_stub_status_module
+    --with-http_v2_module
+    --with-stream
+    --with-stream_ssl_module
+    --with-stream_ssl_preread_module
+    --with-openssl=../openssl-{{ openssl_ver }}
+    --with-pcre=../pcre-{{ pcre_ver }}
+  args:
+    chdir: "{{ build_src_path }}/{{ openresty_name }}"
+    creates: "{{ build_src_path }}/{{ openresty_name }}/Makefile"
+
+- name: make build install
+  command: make build install
+  args:
+    chdir: "{{ build_src_path }}/{{ openresty_name }}"
+    creates: "{{ main_path }}/nginx/sbin/nginx"
+
+- name: downloading luarocks
+  when: luarocks_enable
+  get_url:
+    url: "{{ luarocks_tgz_url }}"
+    dest: "{{ build_src_path }}/{{ luarocks_tgz }}"
+    mode: 0644
+    checksum: "{{ luarocks_checksum }}"
+
+- name: unarchive luarocks
+  when: luarocks_enable
+  unarchive:
+    remote_src: yes
+    src: "{{ build_src_path }}/{{ luarocks_tgz }}"
+    dest: "{{ build_src_path }}"
+    creates: "{{ build_src_path }}/{{ luarocks_name }}"
+
+- name: configure luarocks
+  when: luarocks_enable
+  command: >-
+    ./configure
+    --prefix={{ luarocks_prefix }}
+    --with-lua={{ luajit_dir }}
+    --lua-suffix=jit
+    --with-lua-include={{ luajit_include_dir }}
+  args:
+    chdir: "{{ build_src_path }}/{{ luarocks_name }}"
+    creates: "{{ build_src_path }}/{{ luarocks_name }}/config.unix"
+
+- name: build and install luarocks
+  when: luarocks_enable
+  command: make build install
+  args:
+    chdir: "{{ build_src_path }}/{{ luarocks_name }}"
+    creates: "{{ luarocks_prefix }}/bin/luarocks"
+
+- name: install some rocks
+  when: luarocks_enable
+  with_items: "{{ luarocks_install | default([]) }}"
+  command: >-
+    {{ luarocks_prefix }}/bin/luarocks install {{ item.name }} {{ item.ver }}
+
+- name: archive pkg
+  archive:
+    path: "{{ main_path }}"
+    dest: "{{ build_pkg_path }}/{{ project }}-v{{ openresty_ver }}.tar.gz"
+- stat:
+    path: "{{ build_pkg_path }}/{{ project }}-v{{ openresty_ver }}.tar.gz"
+  register: openresty_pkg
+
+- name: download upload script
+  with_items:
+    - "{{ deps_mirror }}/toolkit/stash"
+  get_url:
+    url: "{{ item }}"
+    dest: "/usr/bin/"
+    mode: "0755"
+
+- name: upload pkg
+  shell: "/usr/bin/stash {{ project }}-v{{ openresty_ver }}.tar.gz inf"
+  environment:
+    PACKAGE_MANAGE_ADDRESS: "{{ lookup('env', 'PACKAGE_MANAGE_ADDRESS') }}"
+    PACKAGE_MANAGE_PASSWORD: "{{ lookup('env', 'PACKAGE_MANAGE_PASSWORD') }}"
+    PACKAGE_MANAGE_USER: "{{ lookup('env', 'PACKAGE_MANAGE_USER') }}"
+  args:
+    chdir: "{{ build_pkg_path }}"
+  when: openresty_pkg.stat.exists

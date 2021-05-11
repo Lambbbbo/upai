@@ -1,0 +1,17 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ conf_path }}"
+      - "{{ consul_data_dir }}"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: sync template
+    template: src=roles/{{ project }}/templates/etc/{{ item }}.j2 dest={{ conf_path }}/{{ item }}
+    with_items:
+      - "config-agent.json"
+
+  - name: sync supervisor.conf
+    template: src=roles/{{ project }}/templates/supervisor.d/consul-agent.conf dest={{ supervisor_path }}/{{ project }}-agent.conf

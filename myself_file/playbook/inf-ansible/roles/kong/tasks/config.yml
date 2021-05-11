@@ -1,0 +1,43 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ work_path }}"
+      - "{{ main_path }}/bin"
+      - "{{ log_path }}"
+      - "{{ http_conf_path }}"
+      - "{{ stream_conf_path }}"
+      - "{{ ssl_conf_path }}"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: sync kong
+    synchronize: src={{ src_conf_path }}/bin/kong dest={{ dest_conf_path }}/bin/ delete=yes
+  - name: sync kong nginx.conf.template
+    synchronize: src={{ src_conf_path }}/nginx.conf.template dest={{ dest_conf_path }}/nginx.conf.template
+  - name: sync custom conf.d
+    when: sync_costom_conf
+    synchronize: src={{ src_conf_path }}/{{ kong_name }}/{{ item }}/ dest={{ dest_conf_path }}/{{ item }} rsync_opts='--exclude=*.j2' delete=yes
+    with_items:
+      - "conf.http.d"
+      - "conf.stream.d"
+  - name: template custom conf.d
+    when: ssl_stream_proxy_enable
+    template: src={{ src_conf_path }}/{{ kong_name }}/{{ item }}.j2 dest={{ dest_conf_path }}/{{ item }}
+    with_items:
+      - "conf.stream.d/sslproxy.conf"
+  - name: template nsqproxy.conf
+    when: with_nsqproxy_conf
+    template: src={{ src_conf_path }}/{{ kong_name }}/{{ item }}.j2 dest={{ dest_conf_path }}/{{ item }}
+    with_items:
+      - "conf.stream.d/nsqproxy.conf"
+  - name: template cdnnsq.conf
+    when: with_cdnnsq
+    template: src={{ src_conf_path }}/{{ kong_name }}/{{ item }}.j2 dest={{ dest_conf_path }}/{{ item }}
+    with_items:
+      - "conf.stream.d/cdnnsq.conf"
+  - name: sync ssl
+    synchronize: src={{ src_conf_path }}/ssl/ dest={{ dest_conf_path }}/ssl
+  - name: sync template
+    template: src={{ src_conf_path }}/kong.conf dest={{ dest_conf_path }}/kong.conf

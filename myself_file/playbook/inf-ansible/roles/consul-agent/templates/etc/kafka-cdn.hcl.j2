@@ -1,0 +1,13 @@
+{
+    "service": {
+        "name": "kafka-cdn",
+        "port": 9092,
+        "checks": [
+            {
+                "tcp": "{{ ansible_host }}:9092",
+                "interval": "5s",
+                "timeout": "2s"
+            }
+        ]
+    }
+}

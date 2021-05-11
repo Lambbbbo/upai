@@ -1,0 +1,21 @@
+---
+  - name: create directory
+    with_items:
+      - "{{ conf_path }}"
+      - "{{ conf_path }}/certs"
+      - "{{ vault_data_dir }}"
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: "0755"
+
+  - name: sync certs
+    synchronize: src=roles/{{ project }}/templates/etc/certs/ dest={{ conf_path }}/certs/ delete=yes
+
+  - name: sync template
+    template: src=roles/{{ project }}/templates/etc/{{ item }} dest={{ conf_path }}/{{ item }}
+    with_items:
+      - "config.hcl"
+
+  - name: sync supervisor.conf
+    template: src=roles/{{ project }}/templates/supervisor.d/vault.conf dest={{ supervisor_path }}/vault.conf

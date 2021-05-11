@@ -1,0 +1,6 @@
+main_path: "/usr/local/nsq"
+conf_path: "{{ main_path }}/etc"
+cert_path: "{{ main_path }}/etc/certs"
+supervisor_path: "/etc/supervisor.d"
+
+app_tgz: "roles/{{ project }}/files/nsq-1.1.0.tar.gz"

@@ -1,0 +1,5 @@
+main_path: "/usr/local/consul-cdn"
+conf_path: "{{ main_path }}/etc"
+supervisor_path: "/etc/supervisor.d"
+
+app_tgz: "roles/{{ project }}/files/consul-1.6.0-bin.tar.gz"

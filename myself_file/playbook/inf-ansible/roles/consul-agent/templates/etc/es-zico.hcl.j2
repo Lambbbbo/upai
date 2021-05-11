@@ -1,0 +1,14 @@
+{
+    "service": {
+        "name": "es-zico",
+        "port": 9500,
+        "checks": 
+            {
+                "http": "http://{{ ansible_host }}:9500/_cat/health",
+                "method": "GET",
+                "interval": "5s",
+                "timeout": "1s"
+            }
+        ]
+    }
+}

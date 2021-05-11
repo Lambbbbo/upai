@@ -1,0 +1,172 @@
+ES-ZJ-LNA-032 ansible_host=192.168.35.32
+ES-ZJ-LNA-033 ansible_host=192.168.35.33
+ES-ZJ-LNA-034 ansible_host=192.168.35.34
+ES-ZJ-LNA-035 ansible_host=192.168.35.35
+ES-ZJ-LNA-036 ansible_host=192.168.35.36
+
+ES-ZJ-LNA-041 ansible_host=192.168.35.41
+ES-ZJ-LNA-042 ansible_host=192.168.35.42
+ES-ZJ-LNA-043 ansible_host=192.168.35.43
+ES-ZJ-LNA-044 ansible_host=192.168.35.44
+ES-ZJ-LNA-045 ansible_host=192.168.35.45
+ES-ZJ-LNA-046 ansible_host=192.168.35.46
+ES-ZJ-LNA-047 ansible_host=192.168.35.47
+ES-ZJ-LNA-048 ansible_host=192.168.35.48
+ES-ZJ-LNA-049 ansible_host=192.168.35.49
+
+[all:vars]
+ansible_port=65422
+ansible_user=root
+
+[BUILD]
+10.0.5.81 ansible_port=22
+
+[BUILD:vars]
+ansible_port=10240
+
+[REDIS-SENTINEL]
+DC-ZJ-HGH-011 ansible_host=192.168.12.11
+DC-ZJ-HGH-012 ansible_host=192.168.12.12
+DC-ZJ-HGH-013 ansible_host=192.168.12.13
+DC-ZJ-HGH-014 ansible_host=192.168.12.14
+
+[CONSUL-CDN]
+ES-ZJ-LNA-032
+ES-ZJ-LNA-033
+ES-ZJ-LNA-034
+
+[VAULT]
+ES-ZJ-LNA-032
+ES-ZJ-LNA-033
+
+[POSTGRES_EXPORTER]
+DC-ZJ-HGH-026 ansible_host=192.168.12.26
+DC-ZJ-HGH-027 ansible_host=192.168.12.27
+DBS-SAD-015 ansible_host=192.168.147.15
+DBS-SAD-016 ansible_host=192.168.147.16
+
+[KONG-S]
+OAUTH2-PROXY ansible_host=192.168.5.77
+OAUTH2-PROXY2 ansible_host=192.168.5.76
+
+[KONG-X]
+DC-ZJ-HGH-015 ansible_host=192.168.12.15 nsqd_broadcast_address=cdn-nsqd1.pxy.upyun.com
+DC-ZJ-HGH-016 ansible_host=192.168.12.16 nsqd_broadcast_address=cdn-nsqd2.pxy.upyun.com
+DC-ZJ-HGH-017 ansible_host=192.168.12.17 nsqd_broadcast_address=cdn-nsqd3.pxy.upyun.com
+DC-ZJ-HGH-018 ansible_host=192.168.12.18 nsqd_broadcast_address=cdn-nsqd4.pxy.upyun.com
+
+[KONG-X-BK]
+DC-ZJ-HGH-026 ansible_host=192.168.12.26
+DC-ZJ-HGH-027 ansible_host=192.168.12.27
+DC-ZJ-HGH-028 ansible_host=192.168.12.28
+DC-ZJ-HGH-029 ansible_host=192.168.12.29
+
+[KONG-X-OSPF]
+SLB-SAD-011 ansible_host=192.168.147.11 nsq_index=192.168.12.15
+SLB-SAD-012 ansible_host=192.168.147.12 nsq_index=192.168.12.16
+SLB-SAD-013 ansible_host=192.168.147.13 nsq_index=192.168.12.17
+SLB-SAD-014 ansible_host=192.168.147.14 nsq_index=192.168.12.18
+
+[KONG-HK]
+NTT-CN-HKG-027 ansible_host=129.227.137.233
+NTT-CN-HKG-028 ansible_host=129.227.137.234
+PCW-HKG-171    ansible_host=43.230.89.171
+
+[ES-UPLOG]
+ES-ZJ-LNA-105 ansible_host=192.168.32.105
+ES-ZJ-LNA-106 ansible_host=192.168.32.106
+ES-ZJ-LNA-107 ansible_host=192.168.32.107
+ES-ZJ-LNA-108 ansible_host=192.168.32.108
+ES-ZJ-LNA-109 ansible_host=192.168.32.109
+
+[ES-UPLOG2]
+ES-ZJ-LNA2-009 ansible_host=192.168.32.9
+ES-ZJ-LNA2-010 ansible_host=192.168.32.10
+ES-ZJ-LNA2-011 ansible_host=192.168.32.11
+ES-ZJ-LNA2-012 ansible_host=192.168.32.12
+ES-ZJ-LNA2-013 ansible_host=192.168.32.13
+ES-ZJ-LNA2-014 ansible_host=192.168.32.14
+ES-ZJ-LNA2-015 ansible_host=192.168.32.15
+ES-ZJ-LNA2-016 ansible_host=192.168.32.16
+ES-ZJ-LNA2-017 ansible_host=192.168.32.17
+ES-ZJ-LNA2-018 ansible_host=192.168.32.18
+ES-ZJ-LNA2-019 ansible_host=192.168.32.19
+ES-ZJ-LNA2-020 ansible_host=192.168.32.20
+
+
+[ES-UPLOG3]
+ES-ZJ-LNA2-003 ansible_host=192.168.32.3
+ES-ZJ-LNA2-004 ansible_host=192.168.32.4
+ES-ZJ-LNA2-005 ansible_host=192.168.32.5
+ES-ZJ-LNA2-006 ansible_host=192.168.32.6
+ES-ZJ-LNA2-007 ansible_host=192.168.32.7
+ES-ZJ-LNA2-008 ansible_host=192.168.32.8
+
+[ES-EDGE-LOGGER]
+ES-ZJ-LNA-032
+ES-ZJ-LNA-033
+ES-ZJ-LNA-034
+ES-ZJ-LNA-035
+ES-ZJ-LNA-036
+
+[ES-ZICO]
+FD-ZICO-111 ansible_host=192.168.5.111
+FD-ZICO-112 ansible_host=192.168.5.112
+FD-ZICO-113 ansible_host=192.168.5.113
+FD-ZICO-114 ansible_host=192.168.5.114
+FD-ZICO-115 ansible_host=192.168.5.115
+SD-ZICO-250 ansible_host=192.168.137.250
+SD-ZICO-251 ansible_host=192.168.137.251
+SD-ZICO-252 ansible_host=192.168.137.252
+
+[ES-ZICO2]
+ES-ZJ-LNA-100 ansible_host=192.168.32.100
+ES-ZJ-LNA-101 ansible_host=192.168.32.101
+ES-ZJ-LNA-102 ansible_host=192.168.32.102
+ES-ZJ-LNA-103 ansible_host=192.168.32.103
+ES-ZJ-LNA-104 ansible_host=192.168.32.104
+
+[ZOOKEEPER]
+ES-ZJ-LNA-045
+ES-ZJ-LNA-046
+ES-ZJ-LNA-047
+ES-ZJ-LNA-048
+ES-ZJ-LNA-049
+
+[KAFKA]
+ES-ZJ-LNA-041 ansible_host=192.168.35.41
+ES-ZJ-LNA-042 ansible_host=192.168.35.42
+ES-ZJ-LNA-043 ansible_host=192.168.35.43
+ES-ZJ-LNA-044 ansible_host=192.168.35.44
+ES-ZJ-LNA-045 ansible_host=192.168.35.45
+ES-ZJ-LNA-046 ansible_host=192.168.35.46
+ES-ZJ-LNA-047 ansible_host=192.168.35.47
+ES-ZJ-LNA-048 ansible_host=192.168.35.48
+ES-ZJ-LNA-049 ansible_host=192.168.35.49
+ES-ZJ-LNA-039 ansible_host=192.168.35.39
+ES-ZJ-LNA-040 ansible_host=192.168.35.40
+
+[CHOPPER]
+ES-ZJ-LNA-041 ansible_host=192.168.35.41
+ES-ZJ-LNA-042 ansible_host=192.168.35.42
+ES-ZJ-LNA-043 ansible_host=192.168.35.43
+ES-ZJ-LNA-044 ansible_host=192.168.35.44
+ES-ZJ-LNA-045 ansible_host=192.168.35.45
+ES-ZJ-LNA-046 ansible_host=192.168.35.46
+ES-ZJ-LNA-047 ansible_host=192.168.35.47
+ES-ZJ-LNA-048 ansible_host=192.168.35.48
+ES-ZJ-LNA-049 ansible_host=192.168.35.49
+
+[KONG-X-SAD]
+#122.224.83.159  # VIP CTC
+#124.160.136.159 # VIP CNC
+#112.13.110.159  # VIP CMN
+403-ZJ-SAD-098 ansible_ssh_host=192.168.148.98  nsq_index=192.168.12.15
+403-ZJ-SAD-099 ansible_ssh_host=192.168.148.99  nsq_index=192.168.12.16
+403-ZJ-SAD-100 ansible_ssh_host=192.168.148.100 nsq_index=192.168.12.17
+403-ZJ-SAD-101 ansible_ssh_host=192.168.148.101 nsq_index=192.168.12.18
+403-ZJ-SAD-102 ansible_ssh_host=192.168.148.102 nsq_index=192.168.12.15
+403-ZJ-SAD-103 ansible_ssh_host=192.168.148.103 nsq_index=192.168.12.16
+403-ZJ-SAD-104 ansible_ssh_host=192.168.148.104 nsq_index=192.168.12.17
+403-ZJ-SAD-105 ansible_ssh_host=192.168.148.105 nsq_index=192.168.12.18
+403-ZJ-SAD-106 ansible_ssh_host=192.168.148.106 nsq_index=192.168.12.18

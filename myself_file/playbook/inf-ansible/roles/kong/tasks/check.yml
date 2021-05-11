@@ -1,0 +1,3 @@
+---
+  - name: check kong.conf
+    command: "{{ main_path }}/bin/kong check {{ main_path }}/kong.conf"

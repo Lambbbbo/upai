@@ -1,0 +1,3 @@
+---
+  - name: restart service
+    supervisorctl: name='nsq:' state=restarted

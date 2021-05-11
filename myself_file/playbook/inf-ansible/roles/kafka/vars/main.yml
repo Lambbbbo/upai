@@ -1,0 +1,6 @@
+prefix_path: "/opt"
+main_path: "{{ prefix_path }}/kafka_2.11-0.10.2.1"
+conf_path: "{{ main_path }}/config"
+supervisor_path: "/etc/supervisor.d"
+
+app_tgz: "roles/{{ project }}/files/kafka_2.11-0.10.2.1.tgz"

@@ -1,0 +1,10 @@
+---
+- name: ensure group exists
+  group:
+    name: kafka
+    state: present
+
+- name: add the user and group
+  user:
+    name: kafka
+    group: kafka

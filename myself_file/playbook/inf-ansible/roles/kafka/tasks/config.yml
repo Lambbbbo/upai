@@ -1,0 +1,29 @@
+---
+- name: create conf and logs directory
+  with_items:
+    - "{{ conf_path }}"
+    - "{{ kafka_logs_path }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: kafka
+    group: kafka
+
+- name: create data directory
+  with_items: "{{ kafka_data_path.split(',') }}"
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: kafka
+    group: kafka
+
+- name: sync template
+  template: src=roles/{{ project }}/templates/config/{{ item }} dest={{ conf_path }}/{{ item }}
+  with_items:
+    - "log4j.properties"
+    - "server.properties"
+
+- name: sync supervisor.conf
+  template: src=roles/{{ project }}/templates/supervisor.d/kafka.conf dest={{ supervisor_path }}/{{ project }}.conf

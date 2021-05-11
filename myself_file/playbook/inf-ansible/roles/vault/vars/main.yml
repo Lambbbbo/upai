@@ -1,0 +1,6 @@
+main_path: "/usr/local/vault"
+conf_path: "{{ main_path }}/etc"
+supervisor_path: "/etc/supervisor.d"
+vault_data_dir: "/disk/ssd1/vault/data"
+
+app_tgz: "roles/{{ project }}/files/vault-1.2.2-bin.tar.gz"

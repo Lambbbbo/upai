@@ -1,0 +1,8 @@
+---
+kafka_data_path: "/disk/sata2/kafka-logs,/disk/sata3/kafka-logs,/disk/sata4/kafka-logs,/disk/sata5/kafka-logs,/disk/sata6/kafka-logs,/disk/sata7/kafka-logs,/disk/sata8/kafka-logs,/disk/sata9/kafka-logs,/disk/sata10/kafka-logs,/disk/sata11/kafka-logs"
+kafka_logs_path: "/disk/sata1/kafka/logs"
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '["kafka-cdn", "chopper-next"]'

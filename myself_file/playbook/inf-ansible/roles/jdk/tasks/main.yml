@@ -1,0 +1,4 @@
+---
+- include_tasks: roles/{{ role }}/tasks/app.yml
+  tags:
+     - app

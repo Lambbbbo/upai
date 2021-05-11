@@ -1,0 +1,12 @@
+master00: "192.168.12.12"
+master01: "192.168.12.13"
+master02: "192.168.12.14"
+master03: "192.168.12.11"
+
+redis_dir: "/disk/ssd1/redisdb/sentinel"
+
+main_path: "/usr/local/redis-3.2.9"
+conf_path: "{{ main_path }}/etc/sentinel"
+supervisor_path: "/etc/supervisor.d"
+
+app_tgz: "roles/{{ project }}/files/redis-3.2.9-bin.tar.gz"

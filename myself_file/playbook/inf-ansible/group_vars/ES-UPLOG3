@@ -1,0 +1,13 @@
+---
+elasticsearch_name: "uplog-ssd"
+elasticsearch_http_port: 9200
+elasticsearch_transport_tcp_port: 9300
+elasticsearch_data_path: "/disk/ssd1/esindex,/disk/ssd2/esindex,/disk/ssd3/esindex"
+elasticsearch_logs_path: "/disk/ssd1/logs/{{ project }}"
+elasticsearch_ping_unicast_hosts: '["192.168.32.10", "192.168.32.11", "192.168.32.12", "192.168.32.13", "192.168.32.14"]'
+elasticsearch_minimum_master_nodes: 3
+
+consul_agent_datacenter: "upyun-consul"
+consul_agent_data_dir: "/disk/ssd1/consul-agent"
+consul_agent_retry_join: '["consul.service.upyun"]'
+consul_agent_services: '[]'
